@@ -6,7 +6,9 @@ import {
     FolderKanban,
     Settings,
     ArrowLeft,
+    LogOut,
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase';
 import { useNavStore, useProjectStore, type AppStep } from '@/lib/store';
 
 const navItems: { step: AppStep; label: string; icon: React.ReactNode }[] = [
@@ -87,7 +89,30 @@ export function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                InvoiceForge v1.0 — Ou2There
+                <span>InvoiceForge v1.0</span>
+                <button
+                    onClick={async () => {
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        window.location.href = '/login';
+                    }}
+                    title="Sign out"
+                    style={{
+                        background: 'none',
+                        border: '1px solid var(--border)',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '11px',
+                        color: 'var(--text-secondary)',
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    <LogOut size={14} /> Sign out
+                </button>
             </div>
         </aside>
     );
