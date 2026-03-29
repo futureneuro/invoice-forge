@@ -70,7 +70,7 @@ export function InvoiceView() {
                 count: resources.length > 1 ? resources.length : undefined,
                 hours,
                 rate,
-                total: hours * rate,
+                total: Math.round(hours * rate * 100) / 100,
             };
         });
     }, [grouped, invoiceRoles]);

@@ -56,7 +56,7 @@ export function DashboardView() {
     const totalRevenue = invoiceHistory.reduce((sum, inv) => {
         return sum + inv.roles.reduce((rSum, role) => {
             const roleHours = totalHours(inv.entries.filter((e) => e.role === role.role));
-            return rSum + roleHours * role.rate;
+            return rSum + Math.round(roleHours * role.rate * 100) / 100;
         }, 0);
     }, 0);
 
@@ -166,7 +166,7 @@ export function DashboardView() {
                                 {[...invoiceHistory].reverse().map((inv) => {
                                     const invTotal = inv.roles.reduce((sum, role) => {
                                         const hrs = totalHours(inv.entries.filter((e) => e.role === role.role));
-                                        return sum + hrs * role.rate;
+                                        return sum + Math.round(hrs * role.rate * 100) / 100;
                                     }, 0);
                                     return (
                                         <tr key={inv.id}>

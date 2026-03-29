@@ -323,7 +323,7 @@ export function InvoicePDF({ invoice, logoDataUrl }: InvoicePDFProps) {
             count: resources.length > 1 ? resources.length : undefined,
             hours,
             rate,
-            total: hours * rate,
+            total: Math.round(hours * rate * 100) / 100,
         };
     });
 

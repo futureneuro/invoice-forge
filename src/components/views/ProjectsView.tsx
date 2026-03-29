@@ -54,7 +54,7 @@ export function ProjectsView() {
         return getProjectInvoices(projectId).reduce((sum, inv) => {
             return sum + inv.roles.reduce((rSum, role) => {
                 const hrs = totalHours(inv.entries.filter((e) => e.role === role.role));
-                return rSum + hrs * role.rate;
+                return rSum + Math.round(hrs * role.rate * 100) / 100;
             }, 0);
         }, 0);
     };
@@ -457,7 +457,7 @@ function InvoiceTable({
                 {invoices.map((inv) => {
                     const invTotal = inv.roles.reduce((sum: number, role: any) => {
                         const hrs = totalHours(inv.entries.filter((e: any) => e.role === role.role));
-                        return sum + hrs * role.rate;
+                        return sum + Math.round(hrs * role.rate * 100) / 100;
                     }, 0);
                     return (
                         <tr key={inv.id}>

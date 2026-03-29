@@ -40,9 +40,11 @@ export function formatDateShort(dateStr: string): string {
 
 /**
  * Calculate total hours for a set of entries
+ * Rounds to 2 decimal places to avoid floating-point accumulation errors
  */
 export function totalHours(entries: { timeSpent: number }[]): number {
-    return entries.reduce((sum, e) => sum + e.timeSpent, 0);
+    const raw = entries.reduce((sum, e) => sum + e.timeSpent, 0);
+    return Math.round(raw * 100) / 100;
 }
 
 /**
