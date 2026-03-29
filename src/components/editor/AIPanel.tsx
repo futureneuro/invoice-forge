@@ -15,7 +15,7 @@ interface StatusStep {
 export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const { messages, isProcessing, addMessage, setProcessing } = useAIChatStore();
     const {
-        entries, updateEntry, addEntry, deleteEntry,
+        entries, setEntries, updateEntry, addEntry, deleteEntry,
         snapshotVersion, restoreVersion, deleteVersion, versions
     } = useTimeEntriesStore();
     const { settings } = useSettingsStore();
@@ -26,6 +26,7 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     const [changesSummary, setChangesSummary] = useState('');
     const [changeProgress, setChangeProgress] = useState<{ current: number; total: number } | null>(null);
     const [showHistory, setShowHistory] = useState(false);
+    const lastSnapshotRef = useRef<import('@/types').TimeEntry[] | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -49,7 +50,9 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         addMessage({ role: 'user', content: userMessage });
         setProcessing(true);
 
-        // Snapshot before AI changes
+        // Snapshot before AI changes — save in ref for reliable undo
+        const snapshot = JSON.parse(JSON.stringify(entries));
+        lastSnapshotRef.current = snapshot;
         snapshotVersion(`Before: "${userMessage.slice(0, 50)}${userMessage.length > 50 ? '...' : ''}"`);
 
         try {
@@ -224,10 +227,15 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
     };
 
     const handleUndo = () => {
-        if (versions.length > 0) {
+        if (lastSnapshotRef.current) {
+            setEntries(lastSnapshotRef.current);
+            lastSnapshotRef.current = null;
+            setChangesSummary('✅ Undone — restored to before last AI edit');
+        } else if (versions.length > 0) {
+            // Fallback to version store
             const latest = versions[versions.length - 1];
             restoreVersion(latest.id);
-            setChangesSummary('✅ Undone — restored to before last AI edit');
+            setChangesSummary('✅ Undone — restored to previous version');
         }
     };
 
@@ -452,7 +460,7 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
                     }}>
                         <CheckCircle2 size={14} style={{ flexShrink: 0 }} />
                         <span>{changesSummary}</span>
-                        {versions.length > 0 && (
+                        {(lastSnapshotRef.current || versions.length > 0) && (
                             <button
                                 onClick={handleUndo}
                                 style={{
