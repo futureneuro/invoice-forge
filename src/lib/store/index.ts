@@ -73,6 +73,7 @@ export const useSettingsStore = create<SettingsState>()(
                 company: defaultCompany,
                 payment: defaultPayment,
                 defaultRoles,
+                defaultCategories: ['Development', 'QA', 'Design', 'Meeting', 'DevOps', 'Content', 'Project Management'],
                 resourceRoleMappings: [],
                 logoDataUrl: undefined,
             },

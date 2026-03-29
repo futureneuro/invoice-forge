@@ -193,11 +193,15 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     };
 
     const handleCleanUp = () => {
+        const categories = settings.defaultCategories?.length
+            ? settings.defaultCategories.join(', ')
+            : 'Development, QA, Design, Meeting, DevOps, Content, Project Management';
+
         const cleanupPrompt = `Clean up and professionalize ALL time log entries. For EVERY entry across ALL roles:
 
 1. **Enrich descriptions**: Make each description professional and client-ready. Include the Jira ticket reference and what was actually worked on. Remove vague language.
 2. **Split multi-task entries**: If an entry has multiple hours logged with a vague description that seems to cover multiple tasks, SPLIT it into separate entries — one per distinct task. Keep the same date, resource, and role but divide the hours logically.
-3. **Fix categories**: Ensure each entry has the correct category (Development, QA, Design, Meeting, DevOps, Content).
+3. **Fix categories**: Each entry MUST be assigned one of these configured categories ONLY: ${categories}. Choose the most appropriate category based on the work described. Do NOT use any categories outside this list.
 4. **Remove duplicates**: If two entries on the same date by the same person describe the same work, consolidate them.
 5. **Standardize task names**: Use the Jira ticket key (e.g., "PROJ-123") as the task name where available.
 

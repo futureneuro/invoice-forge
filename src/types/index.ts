@@ -153,6 +153,7 @@ export interface AppSettings {
   company: CompanyInfo;
   payment: PaymentInfo;
   defaultRoles: RoleRate[];
+  defaultCategories: string[];
   resourceRoleMappings: ResourceRoleMapping[];
   logoDataUrl?: string;
 }

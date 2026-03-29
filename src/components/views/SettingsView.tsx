@@ -9,6 +9,7 @@ import { uid } from '@/lib/utils';
 export function SettingsView() {
     const { settings, updateSettings, updateTempo, updateClockify, updateAI } = useSettingsStore();
     const logoInputRef = useRef<HTMLInputElement>(null);
+    const [newCategory, setNewCategory] = useState('');
 
     const updateRole = (id: string, updates: Partial<RoleRate>) => {
         const newRoles = settings.defaultRoles.map((r) =>
@@ -363,6 +364,71 @@ export function SettingsView() {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            {/* Categories */}
+            <div className="card" style={{ marginBottom: 'var(--space-6)' }}>
+                <div className="card-header">
+                    <h3><span style={{ marginRight: '8px' }}>🏷️</span>Time Entry Categories</h3>
+                </div>
+                <div className="card-body">
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
+                        Define the categories used across all invoices. The AI &quot;Clean Up&quot; will assign entries to these categories.
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
+                        {(settings.defaultCategories || []).map((cat, idx) => (
+                            <div key={idx} style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                padding: '4px 12px', borderRadius: '16px',
+                                backgroundColor: 'var(--surface-elevated)', border: '1px solid var(--border)',
+                                fontSize: '13px',
+                            }}>
+                                <span>{cat}</span>
+                                <button
+                                    onClick={() => {
+                                        const updated = (settings.defaultCategories || []).filter((_, i) => i !== idx);
+                                        updateSettings({ defaultCategories: updated });
+                                    }}
+                                    style={{
+                                        background: 'none', border: 'none', cursor: 'pointer',
+                                        color: 'var(--text-tertiary)', fontSize: '14px', padding: '0 2px',
+                                        lineHeight: 1,
+                                    }}
+                                    title="Remove"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                        <input
+                            className="form-input"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            placeholder="Add new category..."
+                            style={{ flex: 1 }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && newCategory.trim()) {
+                                    const updated = [...(settings.defaultCategories || []), newCategory.trim()];
+                                    updateSettings({ defaultCategories: updated });
+                                    setNewCategory('');
+                                }
+                            }}
+                        />
+                        <button
+                            className="btn btn-secondary btn-sm"
+                            disabled={!newCategory.trim()}
+                            onClick={() => {
+                                const updated = [...(settings.defaultCategories || []), newCategory.trim()];
+                                updateSettings({ defaultCategories: updated });
+                                setNewCategory('');
+                            }}
+                        >
+                            <Plus size={14} /> Add
+                        </button>
+                    </div>
                 </div>
             </div>
 
