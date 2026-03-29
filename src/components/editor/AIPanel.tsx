@@ -219,7 +219,16 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
 
     const handleRestore = (versionId: string) => {
         restoreVersion(versionId);
-        setChangesSummary('Restored to previous version');
+        setShowHistory(false);
+        setChangesSummary('✅ Restored to previous version');
+    };
+
+    const handleUndo = () => {
+        if (versions.length > 0) {
+            const latest = versions[versions.length - 1];
+            restoreVersion(latest.id);
+            setChangesSummary('✅ Undone — restored to before last AI edit');
+        }
     };
 
     const stepIcon = (step: string) => {
@@ -445,7 +454,7 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
                         <span>{changesSummary}</span>
                         {versions.length > 0 && (
                             <button
-                                onClick={() => setShowHistory(true)}
+                                onClick={handleUndo}
                                 style={{
                                     marginLeft: 'auto',
                                     background: 'none',
