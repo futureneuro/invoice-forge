@@ -379,6 +379,7 @@ export function InvoicePDF({ invoice, logoDataUrl }: InvoicePDFProps) {
                         <Text style={[s.billingLabel, { color: '#333', textDecoration: 'underline' }]}>Info:</Text>
                         <Text style={s.billingText}>
                             Date: {invoice.date}{'\n'}
+                            {invoice.dueDate ? `Due: ${invoice.dueDate}\n` : ''}
                             Ref: {invoice.reference}
                         </Text>
                     </View>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { FileText, Download, Eye, ArrowLeft, CreditCard, Edit3, Users, Building2 } from 'lucide-react';
+import { FileText, Download, Eye, ArrowLeft, CreditCard, Edit3, Users, Building2, CheckCircle2 } from 'lucide-react';
 import { useTimeEntriesStore, useInvoiceStore, useSettingsStore, useNavStore, useProjectStore } from '@/lib/store';
 import { groupBy, totalHours, formatCurrency, uid } from '@/lib/utils';
 import type { InvoiceType, RoleRate, ClientInfo } from '@/types';
@@ -132,6 +132,8 @@ export function InvoiceView() {
         updatedAt: new Date().toISOString(),
     });
 
+    const [saved, setSaved] = useState(false);
+
     const handleGenerate = () => {
         // Persist all invoice settings back to store for future invoices
         persistCurrentSettings();
@@ -142,6 +144,10 @@ export function InvoiceView() {
             createInvoice(buildInvoiceData());
         }
         saveInvoice();
+
+        // Show confirmation feedback
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
     };
 
     // Save current invoice field values back to settings so they auto-populate next time
@@ -579,8 +585,12 @@ export function InvoiceView() {
                                     <><Download size={18} /> Export as PDF</>
                                 )}
                             </button>
-                            <button className="btn btn-secondary" onClick={handleGenerate} style={{ width: '100%' }}>
-                                <FileText size={16} /> Save Invoice
+                            <button className="btn btn-secondary" onClick={handleGenerate} style={{ width: '100%', transition: 'all 0.3s' }}>
+                                {saved ? (
+                                    <><CheckCircle2 size={16} style={{ color: 'var(--success)' }} /> Saved!</>
+                                ) : (
+                                    <><FileText size={16} /> Save Invoice</>
+                                )}
                             </button>
                         </div>
                     </div>
