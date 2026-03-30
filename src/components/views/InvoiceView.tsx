@@ -133,8 +133,10 @@ export function InvoiceView() {
     });
 
     const handleGenerate = () => {
+        // Persist all invoice settings back to store for future invoices
+        persistCurrentSettings();
+
         if (currentInvoice) {
-            // Update existing invoice instead of creating a duplicate
             updateInvoice(buildInvoiceData());
         } else {
             createInvoice(buildInvoiceData());
@@ -142,11 +144,34 @@ export function InvoiceView() {
         saveInvoice();
     };
 
+    // Save current invoice field values back to settings so they auto-populate next time
+    const persistCurrentSettings = () => {
+        updateSettings({
+            defaultClient: buildClientInfo(),
+            payment: {
+                accountHolder: payAccountHolder,
+                accountNumber: payAccountNumber,
+                routingNumber: payRoutingNumber,
+                accountType: payAccountType,
+                contactEmail: payEmail,
+                contactPhone: payPhone,
+                notes: note,
+            },
+            defaultRoles: invoiceRoles,
+        });
+        // Also update project-level client if we have an active project
+        if (activeProjectId && activeProject) {
+            const { updateProject } = useProjectStore.getState();
+            updateProject(activeProjectId, { client: buildClientInfo() });
+        }
+    };
+
     const [exporting, setExporting] = useState(false);
 
     const handleExportPDF = async () => {
         if (exporting) return;
         setExporting(true);
+        persistCurrentSettings();
         try {
             const { pdf } = await import('@react-pdf/renderer');
             const { InvoicePDF } = await import('@/lib/pdf/InvoicePDF');
