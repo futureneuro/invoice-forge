@@ -109,6 +109,36 @@ interface EntryVersion {
     entries: TimeEntry[];
 }
 
+const MAX_VERSIONS = 5;
+const VERSIONS_STORAGE_KEY = 'invoice-forge-versions';
+
+// Version history stored separately to prevent localStorage bloat from corrupting entries
+function loadVersions(): EntryVersion[] {
+    if (typeof window === 'undefined') return [];
+    try {
+        const raw = localStorage.getItem(VERSIONS_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveVersions(versions: EntryVersion[]) {
+    try {
+        localStorage.setItem(VERSIONS_STORAGE_KEY, JSON.stringify(versions));
+    } catch (e) {
+        console.warn('[InvoiceForge] Could not save versions (storage full). Trimming oldest.');
+        // If storage is full, keep only the latest 2 versions
+        try {
+            const trimmed = versions.slice(-2);
+            localStorage.setItem(VERSIONS_STORAGE_KEY, JSON.stringify(trimmed));
+        } catch {
+            // Last resort: clear versions entirely to protect entries
+            localStorage.removeItem(VERSIONS_STORAGE_KEY);
+        }
+    }
+}
+
 interface TimeEntriesState {
     entries: TimeEntry[];
     versions: EntryVersion[];
@@ -127,7 +157,7 @@ export const useTimeEntriesStore = create<TimeEntriesState>()(
     persist(
         (set, get) => ({
             entries: [],
-            versions: [],
+            versions: loadVersions(),
             setEntries: (entries) => set({ entries }),
             addEntry: (entry) =>
                 set((s) => ({
@@ -151,27 +181,37 @@ export const useTimeEntriesStore = create<TimeEntriesState>()(
                     }),
                 })),
             clearEntries: () => set({ entries: [] }),
-            snapshotVersion: (label) =>
-                set((s) => ({
-                    versions: [...s.versions, {
-                        id: generateId(),
-                        label,
-                        timestamp: Date.now(),
-                        entries: JSON.parse(JSON.stringify(s.entries)),
-                    }],
-                })),
+            snapshotVersion: (label) => {
+                const currentEntries = get().entries;
+                const newVersion: EntryVersion = {
+                    id: generateId(),
+                    label,
+                    timestamp: Date.now(),
+                    entries: JSON.parse(JSON.stringify(currentEntries)),
+                };
+                // Keep only the latest MAX_VERSIONS
+                const current = get().versions;
+                const updated = [...current, newVersion].slice(-MAX_VERSIONS);
+                saveVersions(updated);
+                set({ versions: updated });
+            },
             restoreVersion: (versionId) => {
                 const version = get().versions.find(v => v.id === versionId);
                 if (version) {
                     set({ entries: JSON.parse(JSON.stringify(version.entries)) });
                 }
             },
-            deleteVersion: (versionId) =>
-                set((s) => ({
-                    versions: s.versions.filter(v => v.id !== versionId),
-                })),
+            deleteVersion: (versionId) => {
+                const updated = get().versions.filter(v => v.id !== versionId);
+                saveVersions(updated);
+                set({ versions: updated });
+            },
         }),
-        { name: 'invoice-forge-entries' }
+        {
+            name: 'invoice-forge-entries',
+            // Only persist entries — versions are stored separately
+            partialize: (state) => ({ entries: state.entries }),
+        }
     )
 );
 

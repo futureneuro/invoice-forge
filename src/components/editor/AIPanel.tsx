@@ -171,6 +171,11 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                 setChangesSummary(parts.join(', '));
                                 setChangeProgress(null);
                                 setStatusSteps([]);
+
+                                // Save post-refine snapshot so the refined state is in version history
+                                if (appliedCount > 0) {
+                                    snapshotVersion(`After AI: ${appliedCount} changes applied`);
+                                }
                             }
                         } catch (parseErr) {
                             console.error('[AI Refine] Parse error:', parseErr);
