@@ -158,7 +158,15 @@ export const useTimeEntriesStore = create<TimeEntriesState>()(
         (set, get) => ({
             entries: [],
             versions: loadVersions(),
-            setEntries: (entries) => set({ entries }),
+            setEntries: (entries) => {
+                set({ entries });
+                // Explicit backup persist — belt-and-suspenders for reliability
+                try {
+                    const stored = JSON.parse(localStorage.getItem('invoice-forge-entries') || '{}');
+                    stored.state = { ...stored.state, entries };
+                    localStorage.setItem('invoice-forge-entries', JSON.stringify(stored));
+                } catch { /* silently ignore */ }
+            },
             addEntry: (entry) =>
                 set((s) => ({
                     entries: [...s.entries, { ...entry, id: generateId() }],
@@ -198,7 +206,14 @@ export const useTimeEntriesStore = create<TimeEntriesState>()(
             restoreVersion: (versionId) => {
                 const version = get().versions.find(v => v.id === versionId);
                 if (version) {
-                    set({ entries: JSON.parse(JSON.stringify(version.entries)) });
+                    const restored = JSON.parse(JSON.stringify(version.entries));
+                    set({ entries: restored });
+                    // Also explicit persist
+                    try {
+                        const stored = JSON.parse(localStorage.getItem('invoice-forge-entries') || '{}');
+                        stored.state = { ...stored.state, entries: restored };
+                        localStorage.setItem('invoice-forge-entries', JSON.stringify(stored));
+                    } catch { /* silently ignore */ }
                 }
             },
             deleteVersion: (versionId) => {
@@ -211,6 +226,40 @@ export const useTimeEntriesStore = create<TimeEntriesState>()(
             name: 'invoice-forge-entries',
             // Only persist entries — versions are stored separately
             partialize: (state) => ({ entries: state.entries }),
+            // After hydration, auto-restore latest version if entries are stale
+            onRehydrateStorage: () => (state) => {
+                if (!state) return;
+                const versions = loadVersions();
+                if (versions.length === 0) return;
+
+                const latestVersion = versions[versions.length - 1];
+                const hydratedEntries = state.entries || [];
+
+                // If store has no entries but versions exist, auto-restore
+                if (hydratedEntries.length === 0 && latestVersion.entries.length > 0) {
+                    console.log('[InvoiceForge] No entries found, auto-restoring latest version:', latestVersion.label);
+                    state.setEntries(JSON.parse(JSON.stringify(latestVersion.entries)));
+                    return;
+                }
+
+                // If the latest version is an "After AI" snapshot and is newer,
+                // check if the stored entries are stale (fewer entries than the version)
+                if (latestVersion.label.startsWith('After AI') && hydratedEntries.length > 0) {
+                    // Compare a quick fingerprint — entry count + first/last entry IDs
+                    const vEntries = latestVersion.entries;
+                    const storedFirst = hydratedEntries[0]?.id;
+                    const versionFirst = vEntries[0]?.id;
+                    // If the entry IDs match but descriptions differ, entries are stale
+                    if (storedFirst === versionFirst) {
+                        const storedDesc = hydratedEntries[0]?.description;
+                        const versionDesc = vEntries[0]?.description;
+                        if (storedDesc !== versionDesc) {
+                            console.log('[InvoiceForge] Entries appear stale, auto-restoring latest version:', latestVersion.label);
+                            state.setEntries(JSON.parse(JSON.stringify(vEntries)));
+                        }
+                    }
+                }
+            },
         }
     )
 );
