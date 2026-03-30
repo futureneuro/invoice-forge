@@ -131,23 +131,28 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                 });
 
                                 try {
+                                    // Always read fresh state — `entries` from closure is stale
+                                    const currentEntries = useTimeEntriesStore.getState().entries;
+
                                     if (data.action === 'update' && data.entryId) {
-                                        const exists = entries.find(e => e.id === data.entryId);
+                                        const exists = currentEntries.find(e => e.id === data.entryId);
                                         if (exists) {
                                             updateEntry(data.entryId, data.updates);
                                             appliedCount++;
                                         } else {
+                                            console.warn(`[AI Refine] Entry not found for update: ${data.entryId}`);
                                             failedCount++;
                                         }
                                     } else if (data.action === 'add' && data.entry) {
                                         addEntry(data.entry);
                                         appliedCount++;
                                     } else if (data.action === 'delete' && data.entryId) {
-                                        const exists = entries.find(e => e.id === data.entryId);
+                                        const exists = currentEntries.find(e => e.id === data.entryId);
                                         if (exists) {
                                             deleteEntry(data.entryId);
                                             appliedCount++;
                                         } else {
+                                            console.warn(`[AI Refine] Entry not found for delete: ${data.entryId}`);
                                             failedCount++;
                                         }
                                     }
