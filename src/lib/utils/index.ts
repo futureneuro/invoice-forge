@@ -40,11 +40,12 @@ export function formatDateShort(dateStr: string): string {
 
 /**
  * Calculate total hours for a set of entries
- * Rounds to 2 decimal places to avoid floating-point accumulation errors
+ * Rounds to 1 decimal place — this MUST match the display format (.toFixed(1))
+ * so that the number shown on the invoice is the same number used in calculations.
  */
 export function totalHours(entries: { timeSpent: number }[]): number {
     const raw = entries.reduce((sum, e) => sum + e.timeSpent, 0);
-    return Math.round(raw * 100) / 100;
+    return Math.round(raw * 10) / 10;
 }
 
 /**
