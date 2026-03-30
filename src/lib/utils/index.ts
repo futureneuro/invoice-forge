@@ -44,8 +44,9 @@ export function formatDateShort(dateStr: string): string {
  * so that the number shown on the invoice is the same number used in calculations.
  */
 export function totalHours(entries: { timeSpent: number }[]): number {
-    const raw = entries.reduce((sum, e) => sum + e.timeSpent, 0);
-    return Math.round(raw * 10) / 10;
+    // Round each entry to 1dp before summing so the total matches
+    // the sum of displayed values (which all show 1dp).
+    return entries.reduce((sum, e) => sum + Math.round(e.timeSpent * 10) / 10, 0);
 }
 
 /**
