@@ -64,6 +64,7 @@ export interface PaymentInfo {
   notes?: string;
   contactEmail?: string;
   contactPhone?: string;
+  dueDate?: string;
 }
 
 // --- Project ---

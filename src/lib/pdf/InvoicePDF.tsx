@@ -451,6 +451,12 @@ export function InvoicePDF({ invoice, logoDataUrl }: InvoicePDFProps) {
                                 <Text style={s.paymentLineValue}>{invoice.payment.accountType}</Text>
                             </Text>
                         )}
+                        {invoice.dueDate && (
+                            <Text style={s.paymentLine}>
+                                <Text style={s.paymentLineLabel}>DUE DATE: </Text>
+                                <Text style={s.paymentLineValue}>{invoice.dueDate}</Text>
+                            </Text>
+                        )}
                     </View>
                 </View>
 

@@ -22,7 +22,7 @@ export function InvoiceView() {
     const [sprintName, setSprintName] = useState('Sprint 5 Development');
     const [dateRange, setDateRange] = useState('September 1-12, 2025');
     const [invoiceDate, setInvoiceDate] = useState(new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }));
-    const [dueDate, setDueDate] = useState('');
+    const [dueDate, setDueDate] = useState(settings.payment.dueDate || '');
     const [summary, setSummary] = useState('');
     const [note, setNote] = useState(settings.payment.notes || '');
 
@@ -162,6 +162,7 @@ export function InvoiceView() {
                 contactEmail: payEmail,
                 contactPhone: payPhone,
                 notes: note,
+                dueDate,
             },
             defaultRoles: invoiceRoles,
         });
