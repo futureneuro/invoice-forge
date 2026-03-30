@@ -20,9 +20,7 @@ interface Change {
     entry?: Record<string, unknown>;
 }
 
-const BATCH_SIZE = 75;
-
-function buildSystemPrompt(batchEntries: EntryRow[], totalEntries: number, batchNum: number, totalBatches: number): string {
+function buildSystemPrompt(entries: EntryRow[]): string {
     return `You are an AI assistant that refines time log entries for professional invoices.
 
 CAPABILITIES:
@@ -36,7 +34,7 @@ CAPABILITIES:
 
 CRITICAL RULES FOR MAKING CHANGES:
 - You MUST use the EXACT "id" field value from the entries below. IDs look like "abc123def" or similar. Do NOT make up IDs.
-- Process ALL entries in this batch.
+- Process ALL entries.
 - Include a JSON code block at the END of your response with changes.
 - The JSON block MUST follow this exact format:
 
@@ -52,64 +50,11 @@ CRITICAL RULES FOR MAKING CHANGES:
 
 - Only include entries you are actually changing. Do NOT re-send unchanged entries.
 - If no changes needed, return an empty changes array: \`\`\`json\n{"changes":[]}\n\`\`\`
-- Keep the natural language explanation BRIEF (1-2 sentences) since this is batch ${batchNum} of ${totalBatches}.
+- Keep the natural language explanation BRIEF (1-2 sentences).
 - ALWAYS include the JSON block, even if changes is empty.
 
-BATCH ${batchNum} OF ${totalBatches} (${batchEntries.length} entries, ${totalEntries} total in full dataset):
-${JSON.stringify(batchEntries, null, 1)}`;
-}
-
-async function callClaude(
-    apiKey: string,
-    model: string,
-    systemPrompt: string,
-    userMessage: string,
-): Promise<{ text: string; changes: Change[] }> {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-            model,
-            max_tokens: 8192,
-            system: systemPrompt,
-            messages: [{ role: 'user', content: userMessage }],
-        }),
-    });
-
-    if (!response.ok) {
-        const err = await response.text();
-        let errorDetail = `Anthropic API error (${response.status})`;
-        try {
-            const parsed = JSON.parse(err);
-            errorDetail = parsed.error?.message || errorDetail;
-        } catch {
-            errorDetail = err.slice(0, 500);
-        }
-        throw new Error(errorDetail);
-    }
-
-    const data = await response.json();
-    const fullText = data.content?.map((c: { text: string }) => c.text).join('') || '';
-
-    // Parse changes from the response
-    const jsonMatch = fullText.match(/```json\s*([\s\S]*?)\s*```/);
-    const cleanMessage = fullText.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
-    let changes: Change[] = [];
-
-    if (jsonMatch) {
-        try {
-            const parsed = JSON.parse(jsonMatch[1]);
-            changes = parsed.changes || [];
-        } catch (parseErr) {
-            console.error('[AI Refine] JSON parse error in batch:', parseErr);
-        }
-    }
-
-    return { text: cleanMessage, changes };
+HERE ARE ALL ${entries.length} TIME ENTRIES:
+${JSON.stringify(entries, null, 1)}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -148,80 +93,72 @@ export async function POST(req: NextRequest) {
                 }));
 
                 const selectedModel = model || 'claude-sonnet-4-20250514';
+                const systemPrompt = buildSystemPrompt(entryRows);
 
-                // Determine if we need batching
-                const totalBatches = Math.ceil(entryRows.length / BATCH_SIZE);
-                const allChanges: Change[] = [];
-                const summaryParts: string[] = [];
+                send('status', { step: 'calling_api', detail: `Sending all ${entryRows.length} entries to ${selectedModel}...` });
 
-                if (totalBatches <= 1) {
-                    // Single batch — simple path
-                    send('status', { step: 'calling_api', detail: `Sending ${entryRows.length} entries to ${selectedModel}...` });
+                // Single API call with all entries — AI gets full context
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel,
+                        max_tokens: 16384,
+                        system: systemPrompt,
+                        messages: [{ role: 'user', content: message }],
+                    }),
+                });
 
-                    const systemPrompt = buildSystemPrompt(entryRows, entryRows.length, 1, 1);
-                    const result = await callClaude(apiKey, selectedModel, systemPrompt, message);
+                if (!response.ok) {
+                    const err = await response.text();
+                    let errorDetail = `Anthropic API error (${response.status})`;
+                    try {
+                        const parsed = JSON.parse(err);
+                        errorDetail = parsed.error?.message || errorDetail;
+                    } catch {
+                        errorDetail = err.slice(0, 500);
+                    }
+                    throw new Error(errorDetail);
+                }
 
-                    if (result.text) summaryParts.push(result.text);
-                    allChanges.push(...result.changes);
-                } else {
-                    // Multi-batch — process in chunks
-                    send('status', { step: 'calling_api', detail: `Processing ${entryRows.length} entries in ${totalBatches} batches of ~${BATCH_SIZE}...` });
+                const data = await response.json();
+                const fullText = data.content?.map((c: { text: string }) => c.text).join('') || '';
 
-                    for (let i = 0; i < totalBatches; i++) {
-                        const batchStart = i * BATCH_SIZE;
-                        const batchEntries = entryRows.slice(batchStart, batchStart + BATCH_SIZE);
-                        const batchNum = i + 1;
+                // Parse changes from the response
+                const jsonMatch = fullText.match(/```json\s*([\s\S]*?)\s*```/);
+                const cleanMessage = fullText.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
+                let changes: Change[] = [];
 
-                        send('status', { step: 'calling_api', detail: `Batch ${batchNum}/${totalBatches}: Processing ${batchEntries.length} entries...` });
-
-                        try {
-                            const systemPrompt = buildSystemPrompt(batchEntries, entryRows.length, batchNum, totalBatches);
-                            const result = await callClaude(apiKey, selectedModel, systemPrompt, message);
-
-                            if (result.text) summaryParts.push(result.text);
-                            allChanges.push(...result.changes);
-
-                            send('status', {
-                                step: 'batch_done',
-                                detail: `Batch ${batchNum}/${totalBatches} complete — ${result.changes.length} changes found`,
-                            });
-                        } catch (batchErr) {
-                            const errMsg = batchErr instanceof Error ? batchErr.message : 'Unknown batch error';
-                            send('status', {
-                                step: 'batch_error',
-                                detail: `Batch ${batchNum}/${totalBatches} failed: ${errMsg}. Continuing...`,
-                            });
-                            // Continue with remaining batches
-                        }
+                if (jsonMatch) {
+                    try {
+                        const parsed = JSON.parse(jsonMatch[1]);
+                        changes = parsed.changes || [];
+                    } catch (parseErr) {
+                        console.error('[AI Refine] JSON parse error:', parseErr);
                     }
                 }
 
-                // Now stream all changes to the client
-                send('status', { step: 'parsing', detail: `Processing ${allChanges.length} total changes...` });
+                // Send the summary message
+                send('message', { text: cleanMessage || 'Processing complete.' });
 
-                // Send the summary message (combine batch summaries)
-                const combinedSummary = summaryParts.length > 0
-                    ? (totalBatches > 1
-                        ? `Processed all ${entryRows.length} entries across ${totalBatches} batches.\n\n${summaryParts[0]}`
-                        : summaryParts[0])
-                    : 'Processing complete.';
+                // Stream all changes to the client
+                if (changes.length > 0) {
+                    send('status', { step: 'applying', detail: `Applying ${changes.length} changes to time log...` });
 
-                send('message', { text: combinedSummary });
-
-                if (allChanges.length > 0) {
-                    send('status', { step: 'applying', detail: `Applying ${allChanges.length} changes to time log...` });
-
-                    // Send each change individually for real-time application
-                    for (let i = 0; i < allChanges.length; i++) {
+                    for (let i = 0; i < changes.length; i++) {
                         send('change', {
                             index: i,
-                            total: allChanges.length,
-                            ...allChanges[i],
+                            total: changes.length,
+                            ...changes[i],
                         });
                     }
                 }
 
-                send('done', { changesApplied: allChanges.length });
+                send('done', { changesApplied: changes.length });
             } catch (error) {
                 console.error('[AI Refine] Error:', error);
                 send('error', { error: error instanceof Error ? error.message : 'Unknown error occurred' });
