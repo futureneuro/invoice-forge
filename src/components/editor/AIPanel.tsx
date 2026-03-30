@@ -6,6 +6,8 @@ import {
     Zap, Cpu, History, RotateCcw, Trash2, Wand2
 } from 'lucide-react';
 import { useAIChatStore, useTimeEntriesStore, useSettingsStore } from '@/lib/store';
+import { uid } from '@/lib/utils';
+import type { TimeEntry } from '@/types';
 
 interface StatusStep {
     step: string;
@@ -88,6 +90,9 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             let appliedCount = 0;
             let failedCount = 0;
 
+            // Collect all changes during streaming, apply in one bulk update at the end
+            const pendingChanges: Array<{ action: string; entryId?: string; updates?: Record<string, unknown>; entry?: Record<string, unknown> }> = [];
+
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
@@ -111,7 +116,6 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                 }]);
                             } else if (currentEvent === 'token') {
                                 fullStreamText += data.text;
-                                // Strip JSON blocks from display
                                 const clean = fullStreamText
                                     .replace(/```json[\s\S]*?```/g, '')
                                     .replace(/```json[\s\S]*/g, '')
@@ -121,49 +125,63 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                 addMessage({ role: 'assistant', content: data.text });
                                 setStreamingText('');
                             } else if (currentEvent === 'change') {
+                                // Collect changes — don't apply yet
+                                pendingChanges.push(data);
                                 setChangeProgress({ current: data.index + 1, total: data.total });
                                 setStatusSteps(prev => {
                                     const filtered = prev.filter(s => s.step !== 'applying_item');
                                     return [...filtered, {
                                         step: 'applying_item',
-                                        detail: `Applying change ${data.index + 1} of ${data.total}...`,
+                                        detail: `Received change ${data.index + 1} of ${data.total}...`,
                                     }];
                                 });
-
-                                try {
-                                    // Always read fresh state — `entries` from closure is stale
-                                    const currentEntries = useTimeEntriesStore.getState().entries;
-
-                                    if (data.action === 'update' && data.entryId) {
-                                        const exists = currentEntries.find(e => e.id === data.entryId);
-                                        if (exists) {
-                                            updateEntry(data.entryId, data.updates);
-                                            appliedCount++;
-                                        } else {
-                                            console.warn(`[AI Refine] Entry not found for update: ${data.entryId}`);
-                                            failedCount++;
-                                        }
-                                    } else if (data.action === 'add' && data.entry) {
-                                        addEntry(data.entry);
-                                        appliedCount++;
-                                    } else if (data.action === 'delete' && data.entryId) {
-                                        const exists = currentEntries.find(e => e.id === data.entryId);
-                                        if (exists) {
-                                            deleteEntry(data.entryId);
-                                            appliedCount++;
-                                        } else {
-                                            console.warn(`[AI Refine] Entry not found for delete: ${data.entryId}`);
-                                            failedCount++;
-                                        }
-                                    }
-                                } catch (changeErr) {
-                                    console.error('[AI Refine] Change error:', changeErr);
-                                    failedCount++;
-                                }
                             } else if (currentEvent === 'error') {
                                 setErrorMsg(data.error);
                                 addMessage({ role: 'assistant', content: `Error: ${data.error}` });
                             } else if (currentEvent === 'done') {
+                                // Apply ALL changes in one bulk update
+                                if (pendingChanges.length > 0) {
+                                    setStatusSteps([{ step: 'applying', detail: `Applying ${pendingChanges.length} changes...` }]);
+
+                                    let currentEntries = [...useTimeEntriesStore.getState().entries];
+                                    const entryMap = new Map(currentEntries.map(e => [e.id, e]));
+
+                                    for (const change of pendingChanges) {
+                                        try {
+                                            if (change.action === 'update' && change.entryId && change.updates) {
+                                                const existing = entryMap.get(change.entryId);
+                                                if (existing) {
+                                                    const updated = { ...existing, ...change.updates } as TimeEntry;
+                                                    entryMap.set(change.entryId, updated);
+                                                    appliedCount++;
+                                                } else {
+                                                    console.warn(`[AI Refine] Entry not found for update: ${change.entryId}`);
+                                                    failedCount++;
+                                                }
+                                            } else if (change.action === 'add' && change.entry) {
+                                                const newEntry = { ...change.entry, id: uid() } as TimeEntry;
+                                                entryMap.set(newEntry.id, newEntry);
+                                                appliedCount++;
+                                            } else if (change.action === 'delete' && change.entryId) {
+                                                if (entryMap.has(change.entryId)) {
+                                                    entryMap.delete(change.entryId);
+                                                    appliedCount++;
+                                                } else {
+                                                    console.warn(`[AI Refine] Entry not found for delete: ${change.entryId}`);
+                                                    failedCount++;
+                                                }
+                                            }
+                                        } catch (changeErr) {
+                                            console.error('[AI Refine] Change error:', changeErr);
+                                            failedCount++;
+                                        }
+                                    }
+
+                                    // Single store update — one localStorage write
+                                    const finalEntries = Array.from(entryMap.values());
+                                    setEntries(finalEntries);
+                                }
+
                                 const parts = [];
                                 if (appliedCount) parts.push(`${appliedCount} applied`);
                                 if (failedCount) parts.push(`${failedCount} failed`);
@@ -172,7 +190,7 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                 setChangeProgress(null);
                                 setStatusSteps([]);
 
-                                // Save post-refine snapshot so the refined state is in version history
+                                // Save post-refine snapshot
                                 if (appliedCount > 0) {
                                     snapshotVersion(`After AI: ${appliedCount} changes applied`);
                                 }
