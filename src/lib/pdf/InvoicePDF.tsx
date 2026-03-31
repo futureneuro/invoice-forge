@@ -301,7 +301,21 @@ interface InvoicePDFProps {
 }
 
 export function InvoicePDF({ invoice, logoDataUrl }: InvoicePDFProps) {
-    const grouped = groupBy(invoice.entries, 'role');
+    // Process entries: shift weekend dates to sprint start, then sort by date
+    const processedEntries = invoice.entries.map(entry => {
+        const d = new Date(entry.date + 'T12:00:00'); // noon to avoid timezone issues
+        const day = d.getDay(); // 0=Sun, 6=Sat
+        if ((day === 0 || day === 6) && invoice.sprintStartDate) {
+            return { ...entry, date: invoice.sprintStartDate };
+        }
+        return entry;
+    });
+
+    const grouped = groupBy(processedEntries, 'role');
+    // Sort entries within each role group by date ascending
+    Object.keys(grouped).forEach(role => {
+        grouped[role].sort((a, b) => a.date.localeCompare(b.date));
+    });
 
     const roleLabels: Record<string, string> = {
         developer: 'Developers',

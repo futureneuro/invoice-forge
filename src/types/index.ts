@@ -103,6 +103,7 @@ export interface InvoiceConfig {
   summary: string;
   note: string;
   dueDate: string;
+  sprintStartDate?: string;
   client: ClientInfo;
   company: CompanyInfo;
   payment: PaymentInfo;
@@ -157,6 +158,12 @@ export interface AppSettings {
   defaultCategories: string[];
   resourceRoleMappings: ResourceRoleMapping[];
   logoDataUrl?: string;
+  invoiceDefaults?: {
+    invoiceNumber?: string;
+    sprintName?: string;
+    dateRange?: string;
+    sprintStartDate?: string; // YYYY-MM-DD format, used to shift weekend dates
+  };
 }
 
 // --- AI ---

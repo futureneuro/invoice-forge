@@ -18,9 +18,10 @@ export function InvoiceView() {
     const projectClient = activeProject?.client || settings.defaultClient;
 
     const [invoiceType, setInvoiceType] = useState<InvoiceType>('sprint');
-    const [invoiceNumber, setInvoiceNumber] = useState('OU-2025-19');
-    const [sprintName, setSprintName] = useState('Sprint 5 Development');
-    const [dateRange, setDateRange] = useState('September 1-12, 2025');
+    const [invoiceNumber, setInvoiceNumber] = useState(settings.invoiceDefaults?.invoiceNumber || 'OU-2025-19');
+    const [sprintName, setSprintName] = useState(settings.invoiceDefaults?.sprintName || 'Sprint 5 Development');
+    const [dateRange, setDateRange] = useState(settings.invoiceDefaults?.dateRange || 'September 1-12, 2025');
+    const [sprintStartDate, setSprintStartDate] = useState(settings.invoiceDefaults?.sprintStartDate || '');
     const [invoiceDate, setInvoiceDate] = useState(new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }));
     const [dueDate, setDueDate] = useState(settings.payment.dueDate || '');
     const [summary, setSummary] = useState('');
@@ -113,6 +114,7 @@ export function InvoiceView() {
         summary,
         note,
         dueDate,
+        sprintStartDate,
         client: buildClientInfo(),
         company: settings.company,
         payment: {
@@ -165,6 +167,12 @@ export function InvoiceView() {
                 dueDate,
             },
             defaultRoles: invoiceRoles,
+            invoiceDefaults: {
+                invoiceNumber,
+                sprintName,
+                dateRange,
+                sprintStartDate,
+            },
         });
         // Also update project-level client if we have an active project
         if (activeProjectId && activeProject) {
@@ -306,6 +314,13 @@ export function InvoiceView() {
                                 <div className="form-group">
                                     <label className="form-label">Sprint / Phase Name</label>
                                     <input className="form-input" value={sprintName} onChange={(e) => setSprintName(e.target.value)} placeholder="Sprint 5 Development" />
+                                </div>
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Sprint Start Date</label>
+                                    <input className="form-input" type="date" value={sprintStartDate} onChange={(e) => setSprintStartDate(e.target.value)} />
+                                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>Weekend hours will be moved to this date</span>
                                 </div>
                             </div>
                             <div className="form-group">
