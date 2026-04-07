@@ -199,37 +199,20 @@ export function InvoiceView() {
                 throw new Error('Generated PDF blob is empty');
             }
 
-            // Convert blob to base64 for server transport
-            const arrayBuffer = await rawBlob.arrayBuffer();
-            const bytes = new Uint8Array(arrayBuffer);
-            let binary = '';
-            const chunkSize = 8192;
-            for (let i = 0; i < bytes.length; i += chunkSize) {
-                const chunk = bytes.subarray(i, i + chunkSize);
-                binary += String.fromCharCode(...chunk);
-            }
-            const base64 = btoa(binary);
-
+            // Download directly from the client-side blob — no server roundtrip needed
             const fileName = `Invoice_${invoiceNumber.replace(/[^a-zA-Z0-9-]/g, '_')}.pdf`;
+            const url = URL.createObjectURL(rawBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-            // POST to server which writes the file to public/exports/
-            const response = await fetch('/api/export-pdf', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ base64, fileName }),
-            });
+            // Clean up the object URL after a short delay
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Server error ${response.status}: ${errText}`);
-            }
-
-            const { url } = await response.json();
-
-            // Navigate to the file URL — this is a real file on disk, guaranteed download
-            window.open(url, '_blank');
-
-            console.log('[PDF] File written to server, opening:', url);
+            console.log('[PDF] Downloaded:', fileName, `(${rawBlob.size} bytes)`);
             setExporting(false);
         } catch (err) {
             console.error('[PDF] Generation failed:', err);

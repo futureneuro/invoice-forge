@@ -177,7 +177,7 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                         }
                                     }
 
-                                    // Single store update — one localStorage write
+                                    // Single store update — triggers debounced Supabase save
                                     const finalEntries = Array.from(entryMap.values());
                                     setEntries(finalEntries);
                                 }

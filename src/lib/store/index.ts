@@ -1,16 +1,27 @@
 // ============================================================
-// InvoiceForge - Zustand Store
+// InvoiceForge - Zustand Store (Supabase-backed)
 // ============================================================
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type {
     TimeEntry, InvoiceConfig, AppSettings, AIMessage, Project,
-    RoleRate, ClientInfo, CompanyInfo, PaymentInfo, PhasePlan,
-    InvoiceType,
+    RoleRate, ClientInfo, CompanyInfo, PaymentInfo,
 } from '@/types';
+import * as db from '@/lib/supabase-data';
+import type { DraftRow } from '@/lib/supabase-data';
 
 // --- Utility ---
 const generateId = () => Math.random().toString(36).substring(2, 15);
+
+// --- Debounce helper ---
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function debounce<T extends (...args: any[]) => void>(fn: T, ms: number): T {
+    let timer: ReturnType<typeof setTimeout>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return ((...args: any[]) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), ms);
+    }) as unknown as T;
+}
 
 // --- Default Values ---
 const defaultClient: ClientInfo = {
@@ -51,53 +62,106 @@ const defaultRoles: RoleRate[] = [
     { id: '6', role: 'advisor', label: 'Technical Advisor', rate: 140 },
 ];
 
+const defaultSettings: AppSettings = {
+    tempo: { apiToken: '', jiraBaseUrl: '', jiraEmail: '', jiraApiToken: '' },
+    clockify: { apiKey: '', workspaceId: '' },
+    ai: { anthropicApiKey: '', model: 'claude-sonnet-4-20250514' },
+    defaultClient,
+    company: defaultCompany,
+    payment: defaultPayment,
+    defaultRoles,
+    defaultCategories: ['Development', 'QA', 'Design', 'Meeting', 'DevOps', 'Content', 'Project Management'],
+    resourceRoleMappings: [],
+    logoDataUrl: undefined,
+};
+
+// ============================================================
+// Global user ID tracking (set by AuthProvider)
+// ============================================================
+let _currentUserId: string | null = null;
+
+export function setCurrentUserId(userId: string | null) {
+    _currentUserId = userId;
+}
+
+export function getCurrentUserId(): string | null {
+    return _currentUserId;
+}
+
 // ============================================================
 // Settings Store
 // ============================================================
 interface SettingsState {
     settings: AppSettings;
+    _hydrated: boolean;
     updateSettings: (partial: Partial<AppSettings>) => void;
     updateTempo: (tempo: Partial<AppSettings['tempo']>) => void;
     updateClockify: (clockify: Partial<AppSettings['clockify']>) => void;
     updateAI: (ai: Partial<AppSettings['ai']>) => void;
+    loadFromSupabase: (userId: string) => Promise<void>;
 }
 
-export const useSettingsStore = create<SettingsState>()(
-    persist(
-        (set) => ({
+const debouncedSaveSettings = debounce((userId: string, settings: AppSettings) => {
+    db.saveSettings(userId, settings);
+}, 500);
+
+export const useSettingsStore = create<SettingsState>()((set, get) => ({
+    settings: { ...defaultSettings },
+    _hydrated: false,
+    updateSettings: (partial) => {
+        set((s) => ({ settings: { ...s.settings, ...partial } }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveSettings(userId, get().settings);
+    },
+    updateTempo: (tempo) => {
+        set((s) => ({
+            settings: { ...s.settings, tempo: { ...s.settings.tempo, ...tempo } },
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveSettings(userId, get().settings);
+    },
+    updateClockify: (clockify) => {
+        set((s) => ({
             settings: {
-                tempo: { apiToken: '', jiraBaseUrl: '', jiraEmail: '', jiraApiToken: '' },
-                clockify: { apiKey: '', workspaceId: '' },
-                ai: { anthropicApiKey: '', model: 'claude-sonnet-4-20250514' },
-                defaultClient,
-                company: defaultCompany,
-                payment: defaultPayment,
-                defaultRoles,
-                defaultCategories: ['Development', 'QA', 'Design', 'Meeting', 'DevOps', 'Content', 'Project Management'],
-                resourceRoleMappings: [],
-                logoDataUrl: undefined,
+                ...s.settings,
+                clockify: { ...s.settings.clockify, ...clockify },
             },
-            updateSettings: (partial) =>
-                set((s) => ({ settings: { ...s.settings, ...partial } })),
-            updateTempo: (tempo) =>
-                set((s) => ({
-                    settings: { ...s.settings, tempo: { ...s.settings.tempo, ...tempo } },
-                })),
-            updateClockify: (clockify) =>
-                set((s) => ({
-                    settings: {
-                        ...s.settings,
-                        clockify: { ...s.settings.clockify, ...clockify },
-                    },
-                })),
-            updateAI: (ai) =>
-                set((s) => ({
-                    settings: { ...s.settings, ai: { ...s.settings.ai, ...ai } },
-                })),
-        }),
-        { name: 'invoice-forge-settings' }
-    )
-);
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveSettings(userId, get().settings);
+    },
+    updateAI: (ai) => {
+        set((s) => ({
+            settings: { ...s.settings, ai: { ...s.settings.ai, ...ai } },
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveSettings(userId, get().settings);
+    },
+    loadFromSupabase: async (userId: string) => {
+        setCurrentUserId(userId);
+        const loaded = await db.loadSettings(userId);
+        if (loaded) {
+            // Deep merge with defaults to handle new fields
+            set({
+                settings: {
+                    ...defaultSettings,
+                    ...loaded,
+                    tempo: { ...defaultSettings.tempo, ...loaded.tempo },
+                    clockify: { ...defaultSettings.clockify, ...loaded.clockify },
+                    ai: { ...defaultSettings.ai, ...loaded.ai },
+                    company: { ...defaultSettings.company, ...loaded.company },
+                    defaultClient: { ...defaultSettings.defaultClient, ...loaded.defaultClient },
+                    payment: { ...defaultSettings.payment, ...loaded.payment },
+                },
+                _hydrated: true,
+            });
+        } else {
+            // First time — save defaults to Supabase
+            await db.saveSettings(userId, defaultSettings);
+            set({ _hydrated: true });
+        }
+    },
+}));
 
 // ============================================================
 // Time Entries Store (with Version History)
@@ -110,38 +174,11 @@ interface EntryVersion {
 }
 
 const MAX_VERSIONS = 5;
-const VERSIONS_STORAGE_KEY = 'invoice-forge-versions';
-
-// Version history stored separately to prevent localStorage bloat from corrupting entries
-function loadVersions(): EntryVersion[] {
-    if (typeof window === 'undefined') return [];
-    try {
-        const raw = localStorage.getItem(VERSIONS_STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
-    } catch {
-        return [];
-    }
-}
-
-function saveVersions(versions: EntryVersion[]) {
-    try {
-        localStorage.setItem(VERSIONS_STORAGE_KEY, JSON.stringify(versions));
-    } catch (e) {
-        console.warn('[InvoiceForge] Could not save versions (storage full). Trimming oldest.');
-        // If storage is full, keep only the latest 2 versions
-        try {
-            const trimmed = versions.slice(-2);
-            localStorage.setItem(VERSIONS_STORAGE_KEY, JSON.stringify(trimmed));
-        } catch {
-            // Last resort: clear versions entirely to protect entries
-            localStorage.removeItem(VERSIONS_STORAGE_KEY);
-        }
-    }
-}
 
 interface TimeEntriesState {
     entries: TimeEntry[];
     versions: EntryVersion[];
+    _hydrated: boolean;
     setEntries: (entries: TimeEntry[]) => void;
     addEntry: (entry: Omit<TimeEntry, 'id'>) => void;
     updateEntry: (id: string, updates: Partial<TimeEntry>) => void;
@@ -151,118 +188,103 @@ interface TimeEntriesState {
     snapshotVersion: (label: string) => void;
     restoreVersion: (versionId: string) => void;
     deleteVersion: (versionId: string) => void;
+    loadFromSupabase: (userId: string) => Promise<void>;
 }
 
-export const useTimeEntriesStore = create<TimeEntriesState>()(
-    persist(
-        (set, get) => ({
-            entries: [],
-            versions: loadVersions(),
-            setEntries: (entries) => {
-                set({ entries });
-                // Explicit backup persist — belt-and-suspenders for reliability
-                try {
-                    const stored = JSON.parse(localStorage.getItem('invoice-forge-entries') || '{}');
-                    stored.state = { ...stored.state, entries };
-                    localStorage.setItem('invoice-forge-entries', JSON.stringify(stored));
-                } catch { /* silently ignore */ }
-            },
-            addEntry: (entry) =>
-                set((s) => ({
-                    entries: [...s.entries, { ...entry, id: generateId() }],
-                })),
-            updateEntry: (id, updates) =>
-                set((s) => ({
-                    entries: s.entries.map((e) =>
-                        e.id === id ? { ...e, ...updates } : e
-                    ),
-                })),
-            deleteEntry: (id) =>
-                set((s) => ({
-                    entries: s.entries.filter((e) => e.id !== id),
-                })),
-            bulkUpdateEntries: (updates) =>
-                set((s) => ({
-                    entries: s.entries.map((e) => {
-                        const update = updates.find((u) => u.id === e.id);
-                        return update ? { ...e, ...update.changes } : e;
-                    }),
-                })),
-            clearEntries: () => set({ entries: [] }),
-            snapshotVersion: (label) => {
-                const currentEntries = get().entries;
-                const newVersion: EntryVersion = {
-                    id: generateId(),
-                    label,
-                    timestamp: Date.now(),
-                    entries: JSON.parse(JSON.stringify(currentEntries)),
-                };
-                // Keep only the latest MAX_VERSIONS
-                const current = get().versions;
-                const updated = [...current, newVersion].slice(-MAX_VERSIONS);
-                saveVersions(updated);
-                set({ versions: updated });
-            },
-            restoreVersion: (versionId) => {
-                const version = get().versions.find(v => v.id === versionId);
-                if (version) {
-                    const restored = JSON.parse(JSON.stringify(version.entries));
-                    set({ entries: restored });
-                    // Also explicit persist
-                    try {
-                        const stored = JSON.parse(localStorage.getItem('invoice-forge-entries') || '{}');
-                        stored.state = { ...stored.state, entries: restored };
-                        localStorage.setItem('invoice-forge-entries', JSON.stringify(stored));
-                    } catch { /* silently ignore */ }
-                }
-            },
-            deleteVersion: (versionId) => {
-                const updated = get().versions.filter(v => v.id !== versionId);
-                saveVersions(updated);
-                set({ versions: updated });
-            },
-        }),
-        {
-            name: 'invoice-forge-entries',
-            partialize: (state) => ({ entries: state.entries }),
+const debouncedSaveEntries = debounce((userId: string, entries: TimeEntry[], versions: EntryVersion[]) => {
+    db.saveTimeEntries(userId, entries, versions);
+}, 500);
+
+
+export const useTimeEntriesStore = create<TimeEntriesState>()((set, get) => ({
+    entries: [],
+    versions: [],
+    _hydrated: false,
+    setEntries: (entries) => {
+        set({ entries });
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveEntries(userId, entries, get().versions);
+    },
+    addEntry: (entry) => {
+        set((s) => ({
+            entries: [...s.entries, { ...entry, id: generateId() }],
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveEntries(userId, get().entries, get().versions);
+    },
+    updateEntry: (id, updates) => {
+        set((s) => ({
+            entries: s.entries.map((e) =>
+                e.id === id ? { ...e, ...updates } : e
+            ),
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveEntries(userId, get().entries, get().versions);
+    },
+    deleteEntry: (id) => {
+        set((s) => ({
+            entries: s.entries.filter((e) => e.id !== id),
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveEntries(userId, get().entries, get().versions);
+    },
+    bulkUpdateEntries: (updates) => {
+        set((s) => ({
+            entries: s.entries.map((e) => {
+                const update = updates.find((u) => u.id === e.id);
+                return update ? { ...e, ...update.changes } : e;
+            }),
+        }));
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveEntries(userId, get().entries, get().versions);
+    },
+    clearEntries: () => {
+        set({ entries: [] });
+        const userId = getCurrentUserId();
+        if (userId) debouncedSaveEntries(userId, [], get().versions);
+    },
+    snapshotVersion: (label) => {
+        const currentEntries = get().entries;
+        const newVersion: EntryVersion = {
+            id: generateId(),
+            label,
+            timestamp: Date.now(),
+            entries: JSON.parse(JSON.stringify(currentEntries)),
+        };
+        const updated = [...get().versions, newVersion].slice(-MAX_VERSIONS);
+        set({ versions: updated });
+        // Save immediately for snapshots
+        const userId = getCurrentUserId();
+        if (userId) db.saveTimeEntries(userId, get().entries, updated);
+    },
+    restoreVersion: (versionId) => {
+        const version = get().versions.find(v => v.id === versionId);
+        if (version) {
+            const restored = JSON.parse(JSON.stringify(version.entries));
+            set({ entries: restored });
+            const userId = getCurrentUserId();
+            if (userId) db.saveTimeEntries(userId, restored, get().versions);
         }
-    )
-);
-
-// Client-side auto-restore: runs AFTER Zustand hydration completes (only in browser)
-if (typeof window !== 'undefined') {
-    useTimeEntriesStore.persist.onFinishHydration(() => {
-        // Defer to next tick so Zustand's internal hydration merge fully completes first
-        setTimeout(() => {
-            const versions = loadVersions();
-            if (versions.length === 0) return;
-
-            const latestVersion = versions[versions.length - 1];
-            if (!latestVersion.entries || latestVersion.entries.length === 0) return;
-
-            const currentEntries = useTimeEntriesStore.getState().entries || [];
-
-            // Auto-restore if the version has different data
-            const isDifferent =
-                currentEntries.length !== latestVersion.entries.length ||
-                JSON.stringify(currentEntries.slice(0, 3).map(e => e.description)) !==
-                JSON.stringify(latestVersion.entries.slice(0, 3).map((e: TimeEntry) => e.description));
-
-            if (isDifferent) {
-                console.log(`[InvoiceForge] Auto-restoring: "${latestVersion.label}" (${latestVersion.entries.length} entries vs ${currentEntries.length} current)`);
-                const restored = JSON.parse(JSON.stringify(latestVersion.entries));
-                // Update store
-                useTimeEntriesStore.setState({ entries: restored });
-                // Force persist to localStorage immediately
-                try {
-                    const stored = JSON.parse(localStorage.getItem('invoice-forge-entries') || '{}');
-                    stored.state = { ...stored.state, entries: restored };
-                    localStorage.setItem('invoice-forge-entries', JSON.stringify(stored));
-                } catch { /* ignore */ }
-            }
-        }, 50);
-    });
-}
+    },
+    deleteVersion: (versionId) => {
+        const updated = get().versions.filter(v => v.id !== versionId);
+        set({ versions: updated });
+        const userId = getCurrentUserId();
+        if (userId) db.saveTimeEntries(userId, get().entries, updated);
+    },
+    loadFromSupabase: async (userId: string) => {
+        const data = await db.loadTimeEntries(userId);
+        if (data) {
+            set({
+                entries: data.entries || [],
+                versions: data.versions || [],
+                _hydrated: true,
+            });
+        } else {
+            set({ _hydrated: true });
+        }
+    },
+}));
 
 // ============================================================
 // Invoice Store (with Draft Persistence)
@@ -279,6 +301,7 @@ interface InvoiceState {
     currentInvoice: InvoiceConfig | null;
     invoiceHistory: InvoiceConfig[];
     drafts: Record<string, DraftInvoice>;
+    _hydrated: boolean;
     createInvoice: (config: Partial<InvoiceConfig>) => InvoiceConfig;
     updateInvoice: (updates: Partial<InvoiceConfig>) => void;
     setCurrentInvoice: (invoice: InvoiceConfig | null) => void;
@@ -286,127 +309,124 @@ interface InvoiceState {
     saveDraft: (projectId: string, flowStep: 'import' | 'editor' | 'invoice') => void;
     loadDraft: (projectId: string) => DraftInvoice | null;
     deleteDraft: (projectId: string) => void;
+    loadFromSupabase: (userId: string) => Promise<void>;
 }
 
-export const useInvoiceStore = create<InvoiceState>()(
-    persist(
-        (set, get) => ({
-            currentInvoice: null,
-            invoiceHistory: [],
-            drafts: {},
-            createInvoice: (config) => {
-                const settings = useSettingsStore.getState().settings;
-                const entries = useTimeEntriesStore.getState().entries;
-                const nextNum = get().invoiceHistory.length + 13;
-                const invoice: InvoiceConfig = {
-                    id: generateId(),
-                    invoiceNumber: config.invoiceNumber || `OU-2025-${nextNum}`,
-                    date: config.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }),
-                    reference: config.reference || `INV-OU-2025-${nextNum}`,
-                    sprintName: config.sprintName || '',
-                    dateRange: config.dateRange || '',
-                    type: config.type || 'sprint',
-                    summary: config.summary || '',
-                    note: config.note || settings.payment.notes || '',
-                    dueDate: config.dueDate || '',
-                    client: config.client || settings.defaultClient,
-                    company: config.company || settings.company,
-                    payment: config.payment || settings.payment,
-                    roles: config.roles || settings.defaultRoles,
-                    entries: config.entries || entries,
-                    phasePlan: config.phasePlan,
-                    status: 'draft',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                };
-                set({ currentInvoice: invoice });
-                return invoice;
-            },
-            updateInvoice: (updates) =>
-                set((s) => ({
-                    currentInvoice: s.currentInvoice
-                        ? { ...s.currentInvoice, ...updates, updatedAt: new Date().toISOString() }
-                        : null,
-                })),
-            setCurrentInvoice: (invoice) => set({ currentInvoice: invoice }),
-            saveInvoice: () =>
-                set((s) => {
-                    if (!s.currentInvoice) return s;
-                    // Dedup by invoiceNumber — update existing instead of creating duplicate
-                    const existing = s.invoiceHistory.findIndex(
-                        (i) => i.invoiceNumber === s.currentInvoice!.invoiceNumber
-                    );
-                    const history =
-                        existing >= 0
-                            ? s.invoiceHistory.map((i, idx) =>
-                                idx === existing ? { ...s.currentInvoice!, updatedAt: new Date().toISOString() } : i
-                            )
-                            : [...s.invoiceHistory, s.currentInvoice!];
-                    return { invoiceHistory: history };
-                }),
-            saveDraft: (projectId, flowStep) =>
-                set((s) => {
-                    const entries = useTimeEntriesStore.getState().entries;
-                    // Only save if there's something worth saving
-                    if (entries.length === 0 && !s.currentInvoice) return s;
-                    return {
-                        drafts: {
-                            ...s.drafts,
-                            [projectId]: {
-                                projectId,
-                                invoice: s.currentInvoice,
-                                entries,
-                                flowStep,
-                                updatedAt: new Date().toISOString(),
-                            },
-                        },
-                    };
-                }),
-            loadDraft: (projectId) => {
-                const draft = get().drafts[projectId];
-                if (!draft) return null;
-                // Restore entries and current invoice from draft
-                useTimeEntriesStore.getState().setEntries(draft.entries);
-                if (draft.invoice) {
-                    set({ currentInvoice: draft.invoice });
-                }
-                return draft;
-            },
-            deleteDraft: (projectId) =>
-                set((s) => {
-                    const { [projectId]: _, ...remaining } = s.drafts;
-                    return { drafts: remaining };
-                }),
-        }),
-        {
-            name: 'invoice-forge-invoices',
-            version: 1,
-            migrate: (persistedState: unknown, version: number) => {
-                const state = persistedState as { invoiceHistory?: Array<{ invoiceNumber: string; updatedAt?: string }> };
-                if (version === 0 && state.invoiceHistory) {
-                    // Dedup invoices by invoiceNumber — keep only the most recent one
-                    const seen = new Map<string, number>();
-                    const deduped = state.invoiceHistory.filter((inv, idx) => {
-                        const existing = seen.get(inv.invoiceNumber);
-                        if (existing !== undefined) {
-                            // Keep the later one (higher index = more recent)
-                            return false;
-                        }
-                        seen.set(inv.invoiceNumber, idx);
-                        return true;
-                    });
-                    // Keep only the last entry for each invoiceNumber
-                    const byNumber = new Map<string, typeof deduped[0]>();
-                    for (const inv of state.invoiceHistory) {
-                        byNumber.set(inv.invoiceNumber, inv);
-                    }
-                    state.invoiceHistory = Array.from(byNumber.values());
-                }
-                return state;
-            },
+export const useInvoiceStore = create<InvoiceState>()((set, get) => ({
+    currentInvoice: null,
+    invoiceHistory: [],
+    drafts: {},
+    _hydrated: false,
+    createInvoice: (config) => {
+        const settings = useSettingsStore.getState().settings;
+        const entries = useTimeEntriesStore.getState().entries;
+        const nextNum = get().invoiceHistory.length + 13;
+        const invoice: InvoiceConfig = {
+            id: generateId(),
+            invoiceNumber: config.invoiceNumber || `OU-2025-${nextNum}`,
+            date: config.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }),
+            reference: config.reference || `INV-OU-2025-${nextNum}`,
+            sprintName: config.sprintName || '',
+            dateRange: config.dateRange || '',
+            type: config.type || 'sprint',
+            summary: config.summary || '',
+            note: config.note || settings.payment.notes || '',
+            dueDate: config.dueDate || '',
+            client: config.client || settings.defaultClient,
+            company: config.company || settings.company,
+            payment: config.payment || settings.payment,
+            roles: config.roles || settings.defaultRoles,
+            entries: config.entries || entries,
+            phasePlan: config.phasePlan,
+            status: 'draft',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+        set({ currentInvoice: invoice });
+        return invoice;
+    },
+    updateInvoice: (updates) =>
+        set((s) => ({
+            currentInvoice: s.currentInvoice
+                ? { ...s.currentInvoice, ...updates, updatedAt: new Date().toISOString() }
+                : null,
+        })),
+    setCurrentInvoice: (invoice) => set({ currentInvoice: invoice }),
+    saveInvoice: () => {
+        const state = get();
+        if (!state.currentInvoice) return;
+
+        // Dedup by invoiceNumber
+        const existing = state.invoiceHistory.findIndex(
+            (i) => i.invoiceNumber === state.currentInvoice!.invoiceNumber
+        );
+        const updatedInvoice = { ...state.currentInvoice, updatedAt: new Date().toISOString() };
+        const history =
+            existing >= 0
+                ? state.invoiceHistory.map((i, idx) => idx === existing ? updatedInvoice : i)
+                : [...state.invoiceHistory, state.currentInvoice];
+
+        set({ invoiceHistory: history });
+
+        // Persist to Supabase
+        const userId = getCurrentUserId();
+        if (userId) {
+            db.saveInvoiceToHistory(userId, updatedInvoice);
         }
-    )
-);
+    },
+    saveDraft: (projectId, flowStep) => {
+        const entries = useTimeEntriesStore.getState().entries;
+        const state = get();
+        if (entries.length === 0 && !state.currentInvoice) return;
+
+        const draft: DraftInvoice = {
+            projectId,
+            invoice: state.currentInvoice,
+            entries,
+            flowStep,
+            updatedAt: new Date().toISOString(),
+        };
+
+        set((s) => ({
+            drafts: { ...s.drafts, [projectId]: draft },
+        }));
+
+        const userId = getCurrentUserId();
+        if (userId) {
+            db.saveDraftToDB(userId, projectId, draft);
+        }
+    },
+    loadDraft: (projectId) => {
+        const draft = get().drafts[projectId];
+        if (!draft) return null;
+        useTimeEntriesStore.getState().setEntries(draft.entries);
+        if (draft.invoice) {
+            set({ currentInvoice: draft.invoice });
+        }
+        return draft;
+    },
+    deleteDraft: (projectId) => {
+        set((s) => {
+            const { [projectId]: _, ...remaining } = s.drafts;
+            return { drafts: remaining };
+        });
+        const userId = getCurrentUserId();
+        if (userId) {
+            db.deleteDraftFromDB(userId, projectId);
+        }
+    },
+    loadFromSupabase: async (userId: string) => {
+        const [history, drafts] = await Promise.all([
+            db.loadInvoiceHistory(userId),
+            db.loadDrafts(userId),
+        ]);
+        set({
+            invoiceHistory: history,
+            drafts: drafts as Record<string, DraftInvoice>,
+            _hydrated: true,
+        });
+    },
+}));
 
 // ============================================================
 // Project Store
@@ -414,58 +434,73 @@ export const useInvoiceStore = create<InvoiceState>()(
 interface ProjectState {
     projects: Project[];
     activeProjectId: string | null;
+    _hydrated: boolean;
     createProject: (name: string, client?: ClientInfo, description?: string) => Project;
     updateProject: (id: string, updates: Partial<Project>) => void;
     deleteProject: (id: string) => void;
     setActiveProject: (id: string | null) => void;
     getActiveProject: () => Project | null;
+    loadFromSupabase: (userId: string) => Promise<void>;
 }
 
-export const useProjectStore = create<ProjectState>()(
-    persist(
-        (set, get) => ({
-            projects: [],
-            activeProjectId: null,
-            createProject: (name, client, description) => {
-                const settings = useSettingsStore.getState().settings;
-                const project: Project = {
-                    id: generateId(),
-                    name,
-                    client: client || settings.defaultClient,
-                    description,
-                    status: 'active',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                };
-                set((s) => ({
-                    projects: [...s.projects, project],
-                    activeProjectId: project.id,
-                }));
-                return project;
-            },
-            updateProject: (id, updates) =>
-                set((s) => ({
-                    projects: s.projects.map((p) =>
-                        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
-                    ),
-                })),
-            deleteProject: (id) =>
-                set((s) => ({
-                    projects: s.projects.filter((p) => p.id !== id),
-                    activeProjectId: s.activeProjectId === id ? null : s.activeProjectId,
-                })),
-            setActiveProject: (id) => set({ activeProjectId: id }),
-            getActiveProject: () => {
-                const state = get();
-                return state.projects.find((p) => p.id === state.activeProjectId) || null;
-            },
-        }),
-        { name: 'invoice-forge-projects' }
-    )
-);
+export const useProjectStore = create<ProjectState>()((set, get) => ({
+    projects: [],
+    activeProjectId: null,
+    _hydrated: false,
+    createProject: (name, client, description) => {
+        const settings = useSettingsStore.getState().settings;
+        const project: Project = {
+            id: generateId(),
+            name,
+            client: client || settings.defaultClient,
+            description,
+            status: 'active',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+        set((s) => ({
+            projects: [...s.projects, project],
+            activeProjectId: project.id,
+        }));
+        const userId = getCurrentUserId();
+        if (userId) db.saveProject(userId, project);
+        return project;
+    },
+    updateProject: (id, updates) => {
+        let updatedProject: Project | null = null;
+        set((s) => ({
+            projects: s.projects.map((p) => {
+                if (p.id === id) {
+                    updatedProject = { ...p, ...updates, updatedAt: new Date().toISOString() };
+                    return updatedProject;
+                }
+                return p;
+            }),
+        }));
+        const userId = getCurrentUserId();
+        if (userId && updatedProject) db.saveProject(userId, updatedProject);
+    },
+    deleteProject: (id) => {
+        set((s) => ({
+            projects: s.projects.filter((p) => p.id !== id),
+            activeProjectId: s.activeProjectId === id ? null : s.activeProjectId,
+        }));
+        const userId = getCurrentUserId();
+        if (userId) db.deleteProjectFromDB(userId, id);
+    },
+    setActiveProject: (id) => set({ activeProjectId: id }),
+    getActiveProject: () => {
+        const state = get();
+        return state.projects.find((p) => p.id === state.activeProjectId) || null;
+    },
+    loadFromSupabase: async (userId: string) => {
+        const projects = await db.loadProjects(userId);
+        set({ projects, _hydrated: true });
+    },
+}));
 
 // ============================================================
-// AI Chat Store
+// AI Chat Store (no persistence needed — ephemeral per session)
 // ============================================================
 interface AIChatState {
     messages: AIMessage[];
@@ -490,7 +525,7 @@ export const useAIChatStore = create<AIChatState>()((set) => ({
 }));
 
 // ============================================================
-// Navigation Store (with auto-save/restore drafts)
+// Navigation Store (no persistence needed)
 // ============================================================
 export type AppStep = 'dashboard' | 'projects' | 'settings' | 'invoice-flow';
 export type InvoiceFlowStep = 'import' | 'editor' | 'invoice';
@@ -508,7 +543,6 @@ export const useNavStore = create<NavState>()((set, get) => ({
     currentStep: 'dashboard',
     invoiceFlowStep: 'import',
     setStep: (step) => {
-        // Auto-save draft when navigating away from invoice flow
         const state = get();
         if (state.currentStep === 'invoice-flow' && step !== 'invoice-flow') {
             const projectId = useProjectStore.getState().activeProjectId;
@@ -522,20 +556,17 @@ export const useNavStore = create<NavState>()((set, get) => ({
     enterInvoiceFlow: () => {
         const projectId = useProjectStore.getState().activeProjectId;
         if (projectId) {
-            // Try to restore a draft for this project
             const draft = useInvoiceStore.getState().loadDraft(projectId);
             if (draft) {
                 set({ currentStep: 'invoice-flow', invoiceFlowStep: draft.flowStep });
                 return;
             }
         }
-        // No draft — start fresh
         useTimeEntriesStore.getState().clearEntries();
         useInvoiceStore.getState().setCurrentInvoice(null);
         set({ currentStep: 'invoice-flow', invoiceFlowStep: 'import' });
     },
     exitInvoiceFlow: () => {
-        // Auto-save draft before exiting
         const state = get();
         const projectId = useProjectStore.getState().activeProjectId;
         if (projectId) {

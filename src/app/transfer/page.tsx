@@ -1,59 +1,121 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase';
+import * as db from '@/lib/supabase-data';
 
 export default function TransferPage() {
-    const [status, setStatus] = useState('Loading...');
+    const [status, setStatus] = useState('Checking authentication...');
     const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
-        const keys = [
-            'invoice-forge-settings',
-            'invoice-forge-entries',
-            'invoice-forge-invoices',
-            'invoice-forge-projects',
-        ];
-        const data: Record<string, string> = {};
-        let count = 0;
-        keys.forEach((k) => {
-            const v = localStorage.getItem(k);
-            if (v) {
-                data[k] = v;
-                count++;
+        const supabase = createClient();
+        supabase.auth.getUser().then(async ({ data: { user } }) => {
+            if (!user) {
+                setStatus('Not logged in. Please sign in first to export/import data.');
+                return;
+            }
+            setUserId(user.id);
+
+            // Load all data from Supabase
+            try {
+                const [settings, projects, invoices, drafts, entries] = await Promise.all([
+                    db.loadSettings(user.id),
+                    db.loadProjects(user.id),
+                    db.loadInvoiceHistory(user.id),
+                    db.loadDrafts(user.id),
+                    db.loadTimeEntries(user.id),
+                ]);
+
+                const backup = {
+                    exportedAt: new Date().toISOString(),
+                    userId: user.id,
+                    email: user.email,
+                    settings,
+                    projects,
+                    invoices,
+                    drafts,
+                    entries: entries?.entries || [],
+                    versions: entries?.versions || [],
+                };
+
+                const hasData = settings || projects.length > 0 || invoices.length > 0;
+
+                if (!hasData) {
+                    setStatus('No data found in your account. Use the Import button to restore a backup.');
+                    return;
+                }
+
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                setDownloadUrl(url);
+                setStatus(`Found data ready to export: ${projects.length} projects, ${invoices.length} invoices.`);
+            } catch (err) {
+                console.error('Export error:', err);
+                setStatus('Error loading data. See console for details.');
             }
         });
-
-        if (count === 0) {
-            // Check if we're on Azure (import mode)
-            setStatus('No local data found. Use the file picker below to import your backup.');
-            return;
-        }
-
-        // Export mode
-        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        setDownloadUrl(url);
-        setStatus(`Found ${count} data stores ready to export.`);
     }, []);
 
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+        if (!file || !userId) return;
+
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
             try {
-                const data = JSON.parse(reader.result as string);
-                let count = 0;
-                Object.entries(data).forEach(([k, v]) => {
-                    if (k.startsWith('invoice-forge-')) {
-                        localStorage.setItem(k, v as string);
-                        count++;
+                const backup = JSON.parse(reader.result as string);
+                setStatus('Importing data...');
+
+                // Restore settings
+                if (backup.settings) {
+                    await db.saveSettings(userId, backup.settings);
+                }
+
+                // Restore projects
+                if (backup.projects?.length) {
+                    for (const project of backup.projects) {
+                        await db.saveProject(userId, project);
                     }
-                });
-                setStatus(`✅ Imported ${count} data stores! Reloading in 2 seconds...`);
+                }
+
+                // Restore invoices
+                if (backup.invoices?.length) {
+                    for (const invoice of backup.invoices) {
+                        await db.saveInvoiceToHistory(userId, invoice);
+                    }
+                }
+
+                // Restore drafts
+                if (backup.drafts) {
+                    for (const [projectId, draft] of Object.entries(backup.drafts)) {
+                        await db.saveDraftToDB(userId, projectId, draft as db.DraftRow);
+                    }
+                }
+
+                // Restore time entries
+                if (backup.entries?.length || backup.versions?.length) {
+                    await db.saveTimeEntries(
+                        userId,
+                        backup.entries || [],
+                        backup.versions || []
+                    );
+                }
+
+                // Also handle legacy localStorage format
+                if (backup['invoice-forge-settings']) {
+                    const legacySettings = JSON.parse(backup['invoice-forge-settings']);
+                    if (legacySettings.state?.settings) {
+                        await db.saveSettings(userId, legacySettings.state.settings);
+                    }
+                }
+
+                setStatus(`✅ Import complete! Redirecting in 2 seconds...`);
                 setTimeout(() => { window.location.href = '/'; }, 2000);
-            } catch {
-                setStatus('❌ Invalid file format.');
+            } catch (err) {
+                console.error('Import error:', err);
+                setStatus('❌ Import failed. Check the file format.');
             }
         };
         reader.readAsText(file);
@@ -76,13 +138,13 @@ export default function TransferPage() {
                 width: '100%',
                 textAlign: 'center',
             }}>
-                <h2 style={{ margin: '0 0 8px' }}>Data Transfer</h2>
+                <h2 style={{ margin: '0 0 8px' }}>Data Backup & Restore</h2>
                 <p style={{ color: '#666', fontSize: '14px', marginBottom: '24px' }}>{status}</p>
 
                 {downloadUrl && (
                     <a
                         href={downloadUrl}
-                        download="invoiceforge-backup.json"
+                        download={`invoiceforge-backup-${new Date().toISOString().split('T')[0]}.json`}
                         style={{
                             display: 'inline-block',
                             padding: '12px 24px',
@@ -105,18 +167,25 @@ export default function TransferPage() {
                         padding: '12px 24px',
                         background: '#f0f0f0',
                         borderRadius: '8px',
-                        cursor: 'pointer',
+                        cursor: userId ? 'pointer' : 'not-allowed',
                         fontWeight: 600,
                         fontSize: '14px',
+                        opacity: userId ? 1 : 0.5,
                     }}>
                         ⬆ Import Backup
-                        <input type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
+                        <input
+                            type="file"
+                            accept=".json"
+                            onChange={handleImport}
+                            disabled={!userId}
+                            style={{ display: 'none' }}
+                        />
                     </label>
                 </div>
 
                 <p style={{ fontSize: '12px', color: '#999', marginTop: '24px' }}>
-                    Step 1: Open this page on localhost → Download backup<br />
-                    Step 2: Open this page on Azure → Import backup
+                    Export creates a complete backup of all your settings, projects,<br />
+                    invoices, and time entries from your Supabase account.
                 </p>
             </div>
         </div>
