@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     Sparkles, Plus, Trash2, ChevronDown, ChevronRight,
     ArrowRight, GripVertical, Save, BarChart3
@@ -11,27 +11,14 @@ import { AIPanel } from '@/components/editor/AIPanel';
 import type { TimeEntry } from '@/types';
 
 export function EditorView() {
-    const { entries, updateEntry, addEntry, deleteEntry, setEntries, versions } = useTimeEntriesStore();
+    const { entries, updateEntry, addEntry, deleteEntry, setEntries } = useTimeEntriesStore();
     const { setInvoiceFlowStep } = useNavStore();
     const [aiOpen, setAiOpen] = useState(false);
     const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
     const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
     const [showPlan, setShowPlan] = useState(false);
 
-    // Auto-restore: on mount, check if entries are stale vs the latest version
-    useEffect(() => {
-        if (versions.length === 0) return;
-        const latest = versions[versions.length - 1];
-        if (!latest.entries || latest.entries.length === 0) return;
 
-        const currentCount = entries.length;
-        const versionCount = latest.entries.length;
-
-        if (currentCount !== versionCount) {
-            console.log(`[EditorView] Auto-restoring "${latest.label}" (${versionCount} vs ${currentCount} current)`);
-            setEntries(JSON.parse(JSON.stringify(latest.entries)));
-        }
-    }, []); // Only on mount
 
     // Group by role
     const grouped = groupBy(entries, 'role');
