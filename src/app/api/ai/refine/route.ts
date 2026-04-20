@@ -20,9 +20,11 @@ interface Change {
     entry?: Record<string, unknown>;
 }
 
-function buildSystemPrompt(entries: EntryRow[]): string {
-    return `You are an AI assistant that refines time log entries for professional invoices.
+const BATCH_SIZE = 50; // Process entries in batches to stay within token limits
 
+function buildSystemPrompt(entries: EntryRow[], batchIndex: number, totalBatches: number): string {
+    return `You are an AI assistant that refines time log entries for professional invoices.
+${totalBatches > 1 ? `\nThis is batch ${batchIndex + 1} of ${totalBatches}. Process ONLY the entries provided below.\n` : ''}
 CAPABILITIES:
 1. Refine descriptions - make them professional, detailed, client-ready
 2. Adjust hours - modify time spent on entries
@@ -46,7 +48,7 @@ Always reference the ticket key in descriptions. Use the ticketSummary to unders
 
 CRITICAL RULES FOR MAKING CHANGES:
 - You MUST use the EXACT "id" field value from the entries below. IDs look like "abc123def" or similar. Do NOT make up IDs.
-- Process ALL entries.
+- Process ALL entries in this batch.
 - Include a JSON code block at the END of your response with changes.
 - The JSON block MUST follow this exact format:
 
@@ -62,11 +64,116 @@ CRITICAL RULES FOR MAKING CHANGES:
 
 - Only include entries you are actually changing. Do NOT re-send unchanged entries.
 - If no changes needed, return an empty changes array: \`\`\`json\n{"changes":[]}\n\`\`\`
-- Keep the natural language explanation BRIEF (1-2 sentences).
+- Keep the natural language explanation VERY BRIEF (1 sentence max).
 - ALWAYS include the JSON block, even if changes is empty.
 
-HERE ARE ALL ${entries.length} TIME ENTRIES:
+HERE ARE ${entries.length} TIME ENTRIES TO PROCESS:
 ${JSON.stringify(entries, null, 1)}`;
+}
+
+async function callAnthropicStreaming(
+    apiKey: string,
+    model: string,
+    systemPrompt: string,
+    userMessage: string,
+    send: (event: string, data: unknown) => void,
+): Promise<{ fullText: string; changes: Change[] }> {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+            model,
+            max_tokens: 16384,
+            stream: true,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userMessage }],
+        }),
+    });
+
+    if (!response.ok) {
+        const err = await response.text();
+        let errorDetail = `Anthropic API error (${response.status})`;
+        try {
+            const parsed = JSON.parse(err);
+            errorDetail = parsed.error?.message || errorDetail;
+        } catch {
+            errorDetail = err.slice(0, 500);
+        }
+        throw new Error(errorDetail);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error('No response body from Anthropic');
+
+    const decoder = new TextDecoder();
+    let anthropicBuffer = '';
+    let fullText = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        anthropicBuffer += decoder.decode(value, { stream: true });
+        const lines = anthropicBuffer.split('\n');
+        anthropicBuffer = lines.pop() || '';
+
+        for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const dataStr = line.slice(6).trim();
+            if (dataStr === '[DONE]') continue;
+
+            try {
+                const event = JSON.parse(dataStr);
+                if (event.type === 'content_block_delta' && event.delta?.text) {
+                    fullText += event.delta.text;
+                    // Send token events to keep connection alive
+                    send('token', { text: event.delta.text });
+                }
+            } catch {
+                // Skip unparseable lines
+            }
+        }
+    }
+
+    // Parse changes from the complete response
+    console.log(`[AI Refine] Full text length: ${fullText.length}`);
+    console.log(`[AI Refine] Response preview: ${fullText.slice(0, 300)}`);
+    console.log(`[AI Refine] Response tail: ${fullText.slice(-300)}`);
+
+    // Try multiple JSON extraction patterns
+    let jsonMatch = fullText.match(/```json\s*([\s\S]*?)\s*```/);
+    if (!jsonMatch) {
+        jsonMatch = fullText.match(/```\s*([\s\S]*?\{[\s\S]*?"changes"[\s\S]*?\})\s*```/);
+    }
+    if (!jsonMatch) {
+        jsonMatch = fullText.match(/(\{[\s\S]*?"changes"\s*:\s*\[[\s\S]*?\]\s*\})/);
+    }
+
+    let changes: Change[] = [];
+
+    if (jsonMatch) {
+        try {
+            const parsed = JSON.parse(jsonMatch[1]);
+            changes = parsed.changes || [];
+            console.log(`[AI Refine] Parsed ${changes.length} changes`);
+        } catch (parseErr) {
+            console.error('[AI Refine] JSON parse error:', parseErr);
+            console.error('[AI Refine] Raw JSON string:', jsonMatch[1]?.slice(0, 500));
+            send('message', { text: `⚠️ AI response couldn't be parsed (${fullText.length} chars received). Retrying may help.` });
+        }
+    } else {
+        console.log('[AI Refine] No JSON block found in response');
+        // Check if response was truncated (no closing ```)
+        if (fullText.includes('"changes"') && !fullText.includes('```', fullText.lastIndexOf('"changes"'))) {
+            send('message', { text: `⚠️ AI response was truncated (${fullText.length} chars). The batch may be too large.` });
+        }
+    }
+
+    return { fullText, changes };
 }
 
 export async function POST(req: NextRequest) {
@@ -105,106 +212,72 @@ export async function POST(req: NextRequest) {
                 }));
 
                 const selectedModel = model || 'claude-sonnet-4-20250514';
-                const systemPrompt = buildSystemPrompt(entryRows);
-
-                send('status', { step: 'calling_api', detail: `Sending all ${entryRows.length} entries to ${selectedModel}...` });
-
-                // Streaming API call — keeps Azure proxy alive by sending SSE tokens
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'anthropic-version': '2023-06-01',
-                    },
-                    body: JSON.stringify({
-                        model: selectedModel,
-                        max_tokens: 16384,
-                        stream: true,
-                        system: systemPrompt,
-                        messages: [{ role: 'user', content: message }],
-                    }),
-                });
-
-                if (!response.ok) {
-                    const err = await response.text();
-                    let errorDetail = `Anthropic API error (${response.status})`;
-                    try {
-                        const parsed = JSON.parse(err);
-                        errorDetail = parsed.error?.message || errorDetail;
-                    } catch {
-                        errorDetail = err.slice(0, 500);
-                    }
-                    throw new Error(errorDetail);
+                
+                // Split into batches if there are too many entries
+                const batches: EntryRow[][] = [];
+                for (let i = 0; i < entryRows.length; i += BATCH_SIZE) {
+                    batches.push(entryRows.slice(i, i + BATCH_SIZE));
                 }
 
-                // Read the streaming response from Anthropic
-                const reader = response.body?.getReader();
-                if (!reader) throw new Error('No response body from Anthropic');
+                const allChanges: Change[] = [];
+                const allMessages: string[] = [];
 
-                const decoder = new TextDecoder();
-                let anthropicBuffer = '';
-                let fullText = '';
+                if (batches.length === 1) {
+                    // Single batch — process normally
+                    send('status', { step: 'calling_api', detail: `Sending ${entryRows.length} entries to ${selectedModel}...` });
+                    const systemPrompt = buildSystemPrompt(entryRows, 0, 1);
+                    
+                    send('status', { step: 'streaming', detail: 'Receiving AI response...' });
+                    const result = await callAnthropicStreaming(apiKey, selectedModel, systemPrompt, message, send);
+                    
+                    allChanges.push(...result.changes);
+                    const cleanMsg = result.fullText
+                        .replace(/```json\s*[\s\S]*?\s*```/g, '')
+                        .replace(/```\s*\{[\s\S]*?"changes"[\s\S]*?\}\s*```/g, '')
+                        .trim();
+                    if (cleanMsg) allMessages.push(cleanMsg);
+                } else {
+                    // Multiple batches
+                    send('status', { step: 'batching', detail: `Processing ${entryRows.length} entries in ${batches.length} batches of ~${BATCH_SIZE}...` });
 
-                send('status', { step: 'streaming', detail: 'Receiving AI response...' });
+                    for (let b = 0; b < batches.length; b++) {
+                        const batch = batches[b];
+                        send('status', { 
+                            step: 'calling_api', 
+                            detail: `Batch ${b + 1}/${batches.length}: Processing entries ${b * BATCH_SIZE + 1}-${b * BATCH_SIZE + batch.length}...` 
+                        });
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
-                    anthropicBuffer += decoder.decode(value, { stream: true });
-                    const lines = anthropicBuffer.split('\n');
-                    anthropicBuffer = lines.pop() || '';
-
-                    for (const line of lines) {
-                        if (!line.startsWith('data: ')) continue;
-                        const dataStr = line.slice(6).trim();
-                        if (dataStr === '[DONE]') continue;
-
-                        try {
-                            const event = JSON.parse(dataStr);
-                            if (event.type === 'content_block_delta' && event.delta?.text) {
-                                fullText += event.delta.text;
-                                // Send token events to keep connection alive and show progress
-                                send('token', { text: event.delta.text });
-                            }
-                        } catch {
-                            // Skip unparseable lines
-                        }
+                        const systemPrompt = buildSystemPrompt(batch, b, batches.length);
+                        const result = await callAnthropicStreaming(apiKey, selectedModel, systemPrompt, message, send);
+                        
+                        allChanges.push(...result.changes);
+                        
+                        send('status', { 
+                            step: 'batch_done', 
+                            detail: `Batch ${b + 1}/${batches.length} complete: ${result.changes.length} changes found.` 
+                        });
                     }
-                }
 
-                // Parse changes from the complete response
-                const jsonMatch = fullText.match(/```json\s*([\s\S]*?)\s*```/);
-                const cleanMessage = fullText.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
-                let changes: Change[] = [];
-
-                if (jsonMatch) {
-                    try {
-                        const parsed = JSON.parse(jsonMatch[1]);
-                        changes = parsed.changes || [];
-                    } catch (parseErr) {
-                        console.error('[AI Refine] JSON parse error:', parseErr);
-                    }
+                    allMessages.push(`Processed ${entryRows.length} entries in ${batches.length} batches.`);
                 }
 
                 // Send the summary message
-                send('message', { text: cleanMessage || 'Processing complete.' });
+                send('message', { text: allMessages.join('\n\n') || 'Processing complete.' });
 
                 // Stream all changes to the client
-                if (changes.length > 0) {
-                    send('status', { step: 'applying', detail: `Applying ${changes.length} changes to time log...` });
+                if (allChanges.length > 0) {
+                    send('status', { step: 'applying', detail: `Applying ${allChanges.length} changes to time log...` });
 
-                    for (let i = 0; i < changes.length; i++) {
+                    for (let i = 0; i < allChanges.length; i++) {
                         send('change', {
                             index: i,
-                            total: changes.length,
-                            ...changes[i],
+                            total: allChanges.length,
+                            ...allChanges[i],
                         });
                     }
                 }
 
-                send('done', { changesApplied: changes.length });
+                send('done', { changesApplied: allChanges.length });
             } catch (error) {
                 console.error('[AI Refine] Error:', error);
                 send('error', { error: error instanceof Error ? error.message : 'Unknown error occurred' });
