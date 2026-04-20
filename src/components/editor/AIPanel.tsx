@@ -400,6 +400,65 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
                 </div>
             )}
 
+            {/* Role Filter — always visible */}
+            <div style={{
+                padding: '10px 14px',
+                borderBottom: '1px solid var(--border)',
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '8px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.05em',
+                    color: 'var(--text-tertiary)',
+                }}>
+                    <Filter size={12} />
+                    Scope
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    <button
+                        onClick={() => setSelectedRole('all')}
+                        style={{
+                            padding: '5px 12px',
+                            borderRadius: '16px',
+                            border: `1px solid ${selectedRole === 'all' ? 'var(--accent)' : 'var(--border)'}`,
+                            background: selectedRole === 'all' ? 'rgba(232, 93, 74, 0.15)' : 'transparent',
+                            color: selectedRole === 'all' ? 'var(--accent)' : 'var(--text-secondary)',
+                            fontSize: '12px',
+                            fontWeight: selectedRole === 'all' ? 600 : 400,
+                            cursor: 'pointer',
+                        }}
+                    >
+                        All Roles ({entries.length})
+                    </button>
+                    {availableRoles.map(role => {
+                        const count = entries.filter(e => e.role === role).length;
+                        return (
+                            <button
+                                key={role}
+                                onClick={() => setSelectedRole(role)}
+                                style={{
+                                    padding: '5px 12px',
+                                    borderRadius: '16px',
+                                    border: `1px solid ${selectedRole === role ? 'var(--accent)' : 'var(--border)'}`,
+                                    background: selectedRole === role ? 'rgba(232, 93, 74, 0.15)' : 'transparent',
+                                    color: selectedRole === role ? 'var(--accent)' : 'var(--text-secondary)',
+                                    fontSize: '12px',
+                                    fontWeight: selectedRole === role ? 600 : 400,
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                {roleLabels[role] || role} ({count})
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
             <div className="ai-panel-messages">
                 {messages.length === 0 && !isProcessing && (
                     <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>
@@ -411,61 +470,6 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
                             Ask me to refine descriptions, adjust hours, or analyze your time log. Changes are applied directly and you can revert anytime.
                         </p>
 
-                        {/* Role Filter */}
-                        <div style={{ padding: '0 12px', marginBottom: '12px' }}>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginBottom: '8px',
-                                fontSize: '11px',
-                                fontWeight: 700,
-                                textTransform: 'uppercase' as const,
-                                letterSpacing: '0.05em',
-                                color: 'var(--text-tertiary)',
-                            }}>
-                                <Filter size={12} />
-                                Scope
-                            </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                <button
-                                    onClick={() => setSelectedRole('all')}
-                                    style={{
-                                        padding: '5px 12px',
-                                        borderRadius: '16px',
-                                        border: `1px solid ${selectedRole === 'all' ? 'var(--accent)' : 'var(--border)'}`,
-                                        background: selectedRole === 'all' ? 'rgba(232, 93, 74, 0.15)' : 'transparent',
-                                        color: selectedRole === 'all' ? 'var(--accent)' : 'var(--text-secondary)',
-                                        fontSize: '12px',
-                                        fontWeight: selectedRole === 'all' ? 600 : 400,
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    All Roles ({entries.length})
-                                </button>
-                                {availableRoles.map(role => {
-                                    const count = entries.filter(e => e.role === role).length;
-                                    return (
-                                        <button
-                                            key={role}
-                                            onClick={() => setSelectedRole(role)}
-                                            style={{
-                                                padding: '5px 12px',
-                                                borderRadius: '16px',
-                                                border: `1px solid ${selectedRole === role ? 'var(--accent)' : 'var(--border)'}`,
-                                                background: selectedRole === role ? 'rgba(232, 93, 74, 0.15)' : 'transparent',
-                                                color: selectedRole === role ? 'var(--accent)' : 'var(--text-secondary)',
-                                                fontSize: '12px',
-                                                fontWeight: selectedRole === role ? 600 : 400,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            {roleLabels[role] || role} ({count})
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
 
                         {/* Quick Actions */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 12px' }}>
