@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
 
                 send('status', { step: 'calling_api', detail: `Sending all ${entryRows.length} entries to ${selectedModel}...` });
 
-                // Single API call with all entries — AI gets full context
+                // Streaming API call — keeps Azure proxy alive by sending SSE tokens
                 const response = await fetch('https://api.anthropic.com/v1/messages', {
                     method: 'POST',
                     headers: {
@@ -120,6 +120,7 @@ export async function POST(req: NextRequest) {
                     body: JSON.stringify({
                         model: selectedModel,
                         max_tokens: 16384,
+                        stream: true,
                         system: systemPrompt,
                         messages: [{ role: 'user', content: message }],
                     }),
@@ -137,10 +138,43 @@ export async function POST(req: NextRequest) {
                     throw new Error(errorDetail);
                 }
 
-                const data = await response.json();
-                const fullText = data.content?.map((c: { text: string }) => c.text).join('') || '';
+                // Read the streaming response from Anthropic
+                const reader = response.body?.getReader();
+                if (!reader) throw new Error('No response body from Anthropic');
 
-                // Parse changes from the response
+                const decoder = new TextDecoder();
+                let anthropicBuffer = '';
+                let fullText = '';
+
+                send('status', { step: 'streaming', detail: 'Receiving AI response...' });
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    anthropicBuffer += decoder.decode(value, { stream: true });
+                    const lines = anthropicBuffer.split('\n');
+                    anthropicBuffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        const dataStr = line.slice(6).trim();
+                        if (dataStr === '[DONE]') continue;
+
+                        try {
+                            const event = JSON.parse(dataStr);
+                            if (event.type === 'content_block_delta' && event.delta?.text) {
+                                fullText += event.delta.text;
+                                // Send token events to keep connection alive and show progress
+                                send('token', { text: event.delta.text });
+                            }
+                        } catch {
+                            // Skip unparseable lines
+                        }
+                    }
+                }
+
+                // Parse changes from the complete response
                 const jsonMatch = fullText.match(/```json\s*([\s\S]*?)\s*```/);
                 const cleanMessage = fullText.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
                 let changes: Change[] = [];
