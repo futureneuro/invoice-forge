@@ -1,0 +1,9 @@
+<step title="Incoming Request" date="2026-04-07T19:45:22.042" instance="42e266" url="/api/deployments/latest" method="GET" type="request" pid="836,1,95" Accept="*/*" Host="invoice-forge-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (HOMEBREW)" Accept-Encoding="gzip, deflate" Authorization="Bea..." x-ms-client-request-id="3fe38932-32ba-11f1-aa31-4e4074a3995c" X-ARR-LOG-ID="3fe38932-32ba-11f1-aa31-4e4074a3995c" CLIENT-IP="184.146.41.230:55600" X-SITE-DEPLOYMENT-ID="invoice-forge-app" WAS-DEFAULT-HOSTNAME="invoice-forge-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest" X-Client-IP="184.146.41.230" X-Client-Port="55600" >
+  <step title="Cleanup Xml Logs" date="2026-04-07T19:45:22.090" /><!-- duration: 109ms -->
+  <step title="DeploymentService.GetResult" date="2026-04-07T19:45:22.538" >
+    <step title="DeploymentService.GetLatestDeployment" date="2026-04-07T19:45:22.658" >
+      <step title="DeploymentManager.GetResults" date="2026-04-07T19:45:22.679" /><!-- duration: 3074ms -->
+    </step><!-- duration: 3114ms -->
+  </step><!-- duration: 3257ms -->
+  <step title="Outgoing response" date="2026-04-07T19:45:25.833" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 11ms -->
+</step><!-- duration: 3902ms -->

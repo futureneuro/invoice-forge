@@ -3,8 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     Send, X, Sparkles, Loader2, AlertCircle, CheckCircle2,
-    Zap, Cpu, History, RotateCcw, Trash2, Wand2
+    Zap, Cpu, History, RotateCcw, Trash2, Wand2, Filter
 } from 'lucide-react';
+import { groupBy } from '@/lib/utils';
 import { useAIChatStore, useTimeEntriesStore, useSettingsStore } from '@/lib/store';
 import { uid } from '@/lib/utils';
 import type { TimeEntry } from '@/types';
@@ -28,7 +29,27 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     const [changesSummary, setChangesSummary] = useState('');
     const [changeProgress, setChangeProgress] = useState<{ current: number; total: number } | null>(null);
     const [showHistory, setShowHistory] = useState(false);
+    const [selectedRole, setSelectedRole] = useState<string>('all');
     const lastSnapshotRef = useRef<import('@/types').TimeEntry[] | null>(null);
+
+    // Role labels for display
+    const roleLabels: Record<string, string> = {
+        developer: 'Developers',
+        qa: 'QA',
+        uxui: 'UX/UI Design',
+        content: 'Content Design',
+        pm: 'Project Management',
+        advisor: 'Technical Advisor',
+    };
+
+    // Get unique roles from current entries
+    const availableRoles = Object.keys(groupBy(entries, 'role'));
+
+    // Filter entries based on selected role
+    const getFilteredEntries = () => {
+        if (selectedRole === 'all') return entries;
+        return entries.filter(e => e.role === selectedRole);
+    };
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -58,14 +79,19 @@ export function AIPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         snapshotVersion(`Before: "${userMessage.slice(0, 50)}${userMessage.length > 50 ? '...' : ''}"`);
 
         try {
+            const filteredEntries = getFilteredEntries();
+            const roleLabel = selectedRole === 'all' ? 'all roles' : (roleLabels[selectedRole] || selectedRole);
+
             const response = await fetch('/api/ai/refine', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: userMessage,
-                    entries,
+                    entries: filteredEntries,
                     apiKey: settings.ai.anthropicApiKey,
                     model: settings.ai.model,
+                    // When a specific role is selected, tell the server to skip batching
+                    skipBatching: selectedRole !== 'all',
                 }),
             });
 
@@ -385,6 +411,62 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
                             Ask me to refine descriptions, adjust hours, or analyze your time log. Changes are applied directly and you can revert anytime.
                         </p>
 
+                        {/* Role Filter */}
+                        <div style={{ padding: '0 12px', marginBottom: '12px' }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                marginBottom: '8px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                textTransform: 'uppercase' as const,
+                                letterSpacing: '0.05em',
+                                color: 'var(--text-tertiary)',
+                            }}>
+                                <Filter size={12} />
+                                Scope
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                <button
+                                    onClick={() => setSelectedRole('all')}
+                                    style={{
+                                        padding: '5px 12px',
+                                        borderRadius: '16px',
+                                        border: `1px solid ${selectedRole === 'all' ? 'var(--accent)' : 'var(--border)'}`,
+                                        background: selectedRole === 'all' ? 'rgba(232, 93, 74, 0.15)' : 'transparent',
+                                        color: selectedRole === 'all' ? 'var(--accent)' : 'var(--text-secondary)',
+                                        fontSize: '12px',
+                                        fontWeight: selectedRole === 'all' ? 600 : 400,
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    All Roles ({entries.length})
+                                </button>
+                                {availableRoles.map(role => {
+                                    const count = entries.filter(e => e.role === role).length;
+                                    return (
+                                        <button
+                                            key={role}
+                                            onClick={() => setSelectedRole(role)}
+                                            style={{
+                                                padding: '5px 12px',
+                                                borderRadius: '16px',
+                                                border: `1px solid ${selectedRole === role ? 'var(--accent)' : 'var(--border)'}`,
+                                                background: selectedRole === role ? 'rgba(232, 93, 74, 0.15)' : 'transparent',
+                                                color: selectedRole === role ? 'var(--accent)' : 'var(--text-secondary)',
+                                                fontSize: '12px',
+                                                fontWeight: selectedRole === role ? 600 : 400,
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            {roleLabels[role] || role} ({count})
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
                         {/* Quick Actions */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 12px' }}>
                             <button
@@ -405,9 +487,12 @@ Process ALL entries across ALL role groups. Do not skip any entries.`;
                             >
                                 <Wand2 size={16} style={{ color: 'var(--accent)', flexShrink: 0 }} />
                                 <div>
-                                    <div style={{ fontWeight: 600, fontSize: '13px' }}>🧹 Clean Up &amp; Enrich</div>
+                                    <div style={{ fontWeight: 600, fontSize: '13px' }}>🧹 Clean Up &amp; Enrich{selectedRole !== 'all' ? ` (${roleLabels[selectedRole] || selectedRole})` : ''}</div>
                                     <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
-                                        Professionalize descriptions, split multi-task entries, fix categories
+                                        {selectedRole !== 'all'
+                                            ? `Refine ${getFilteredEntries().length} entries in ${roleLabels[selectedRole] || selectedRole}`
+                                            : 'Professionalize descriptions, split multi-task entries, fix categories'
+                                        }
                                     </div>
                                 </div>
                             </button>

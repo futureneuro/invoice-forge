@@ -1,0 +1,16 @@
+<step title="Incoming Request" date="2026-04-20T16:18:39.395" instance="b51e24" url="/api/publish?type=zip&amp;async=True" method="POST" type="request" pid="831,1,7" Accept="*/*" Host="invoice-forge-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (HOMEBREW)" Accept-Encoding="gzip, deflate" Authorization="Bea..." Cache-Control="no-cache" Content-Type="application/octet-stream" Cookie="ARRAffinity=b51e2484f494a5d12734a673da1fca50e62e30c84d19aee5b57fe2b80d1a17dc; ARRAffinitySameSite=b51e2484f494a5d12734a673da1fca50e62e30c84d19aee5b57fe2b80d1a17dc" Content-Length="13599794" x-ms-client-request-id="891c6d98-3cd4-11f1-8cdc-4e4074a3995c" x-ms-artifact-checksum="7d11b09a54433e025f67172b668666c3c0c6b0a40da266f04dec3e35ac383e9a" X-ARR-LOG-ID="891c6d98-3cd4-11f1-8cdc-4e4074a3995c" CLIENT-IP="184.146.41.230:57790" X-SITE-DEPLOYMENT-ID="invoice-forge-app" WAS-DEFAULT-HOSTNAME="invoice-forge-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?type=zip&amp;async=True" X-Client-IP="184.146.41.230" X-Client-Port="57790" >
+  <step title="OneDeploy" date="2026-04-20T16:18:39.629" >
+    <step title="None repository commit" date="2026-04-20T16:18:39.658" >
+      <step title="Commit id: 68bcee9d-9146-4c54-b52d-5c8e9634ccdb" date="2026-04-20T16:18:39.668" Message="N/A" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 9ms -->
+    </step><!-- duration: 21ms -->
+    <step title="Starting PushDeployAsync" date="2026-04-20T16:18:39.689" /><!-- duration: 2ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/3ec1ffd7-2a71-4abf-a6d2-d266d8604b3c.zip" date="2026-04-20T16:18:39.721" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/3ec1ffd7-2a71-4abf-a6d2-d266d8604b3c.zip" date="2026-04-20T16:18:39.727" /><!-- duration: 10ms -->
+    </step><!-- duration: 589ms -->
+    <step title="Start deployment in the background" date="2026-04-20T16:18:40.322" >
+      <step title="Acquiring Deployment Lock" date="2026-04-20T16:18:40.360" /><!-- duration: 3ms -->
+      <step title="Acquired Deployment Lock" date="2026-04-20T16:18:40.419" /><!-- duration: 9ms -->
+    </step><!-- duration: 192ms -->
+  </step><!-- duration: 896ms -->
+  <step title="Outgoing response" date="2026-04-20T16:18:40.537" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 2ms -->
+</step><!-- duration: 1145ms -->

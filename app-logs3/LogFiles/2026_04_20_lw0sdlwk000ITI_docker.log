@@ -1,0 +1,488 @@
+2026-04-20T16:04:06.3665043Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T16:04:09.1185216Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T16:04:09.1189163Z Container start method called.
+2026-04-20T16:04:09.1189940Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:04:09.1191228Z Establishing network.
+2026-04-20T16:04:09.1197522Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T16:04:09.4436343Z Container is starting.
+2026-04-20T16:04:09.4437208Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:04:09.4437961Z Establishing user namespace if not established already.
+2026-04-20T16:04:09.4530758Z Establishing network if not established already.
+2026-04-20T16:04:09.4611402Z Mounting volumes.
+2026-04-20T16:04:09.4616208Z Nested mountpoint 
+2026-04-20T16:04:09.4806501Z Nested mountpoint volatile/logs
+2026-04-20T16:04:09.5034078Z Nested mountpoint 
+2026-04-20T16:04:09.5225589Z Nested mountpoint 
+2026-04-20T16:04:09.5235717Z Nested mountpoint 
+2026-04-20T16:04:10.1658364Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T16:04:10.1757045Z Creating container.
+2026-04-20T16:04:10.1857492Z Creating pipes for streaming container io.
+2026-04-20T16:04:10.1951181Z Creating stdout named pipe at /podr/container/pipe/22c548df2d7d_invoice-forge-app/stdout_ce336b79bc674069899a4fded267abdd.
+2026-04-20T16:04:10.1960945Z Successfully created stdout named pipe at: /podr/container/pipe/22c548df2d7d_invoice-forge-app/stdout_ce336b79bc674069899a4fded267abdd.
+2026-04-20T16:04:10.2951996Z Opening named pipe /podr/container/pipe/22c548df2d7d_invoice-forge-app/stdout_ce336b79bc674069899a4fded267abdd for reading in non-blocking mode.
+2026-04-20T16:04:10.2958632Z Successfully opened named pipe: /podr/container/pipe/22c548df2d7d_invoice-forge-app/stdout_ce336b79bc674069899a4fded267abdd.
+2026-04-20T16:04:10.2965610Z Successfully removed non-blocking flag from /podr/container/pipe/22c548df2d7d_invoice-forge-app/stdout_ce336b79bc674069899a4fded267abdd.
+2026-04-20T16:04:10.2969417Z Creating stderr named pipe at /podr/container/pipe/22c548df2d7d_invoice-forge-app/stderr_41342569b692499daff12be6fb6a68e7.
+2026-04-20T16:04:10.2971220Z Successfully created stderr named pipe at: /podr/container/pipe/22c548df2d7d_invoice-forge-app/stderr_41342569b692499daff12be6fb6a68e7.
+2026-04-20T16:04:10.2974242Z Opening named pipe /podr/container/pipe/22c548df2d7d_invoice-forge-app/stderr_41342569b692499daff12be6fb6a68e7 for reading in non-blocking mode.
+2026-04-20T16:04:10.2976552Z Successfully opened named pipe: /podr/container/pipe/22c548df2d7d_invoice-forge-app/stderr_41342569b692499daff12be6fb6a68e7.
+2026-04-20T16:04:10.2978679Z Successfully removed non-blocking flag from /podr/container/pipe/22c548df2d7d_invoice-forge-app/stderr_41342569b692499daff12be6fb6a68e7.
+2026-04-20T16:04:10.3071251Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T16:04:11.0401044Z Starting container: 22c548df2d7d_invoice-forge-app.
+2026-04-20T16:04:11.1303689Z Starting watchers and probes.
+2026-04-20T16:04:11.1321297Z Starting metrics collection.
+2026-04-20T16:04:11.1325267Z Container is running.
+2026-04-20T16:04:11.1517289Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:04:11.4033388Z Container start method finished after 2284 ms.
+2026-04-20T16:04:11.4311776Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:04:11.4312198Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T16:04:37.9633838Z Container has finished running with exit code: 1.
+2026-04-20T16:04:37.9825154Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T16:04:38.0321578Z Stop and delete container. Retry count = 0
+2026-04-20T16:04:38.0415297Z Stopping container: 22c548df2d7d_invoice-forge-app.
+2026-04-20T16:04:38.2324814Z Deleting container: 22c548df2d7d_invoice-forge-app. Retry count = 0
+2026-04-20T16:04:38.7149630Z Container spec TerminationMessagePolicy  path 
+2026-04-20T16:04:38.7266668Z Container is terminated. Total time elapsed: 734 ms.
+2026-04-20T16:04:38.7275104Z Site container: invoice-forge-app terminated during site startup.
+2026-04-20T16:04:38.7363673Z State: Stopping, Action: CancellingStartup, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:04:38.7850674Z Site startup probe failed after 27.3203884 seconds.
+2026-04-20T16:04:39.0088806Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:04:39.0273102Z Failed to start site. Revert by stopping site.
+2026-04-20T16:04:39.0574232Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:04:39.0787979Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:04:39.0870048Z Site: invoice-forge-app stopped.
+2026-04-20T16:05:00.5063498Z State: Stopping, Action: StoppingSite, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/16/2026 16:36:29 (UTC), DetailsLevel: INFO
+2026-04-20T16:05:00.5131513Z State: Stopping, Action: StoppingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/16/2026 16:36:29 (UTC), DetailsLevel: INFO
+2026-04-20T16:05:00.5134001Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T16:05:00.5451984Z Stop and delete container. Retry count = 0
+2026-04-20T16:05:00.5529307Z Stopping container: 0cf683caf8c4_invoice-forge-app.
+2026-04-20T16:05:05.8589769Z Deleting container: 0cf683caf8c4_invoice-forge-app. Retry count = 0
+2026-04-20T16:05:06.2749995Z Container spec TerminationMessagePolicy  path 
+2026-04-20T16:05:06.2834425Z Container is terminated. Total time elapsed: 5761 ms.
+2026-04-20T16:05:06.2933356Z Site: invoice-forge-app stopped.
+2026-04-20T16:04:39.1192039Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:04:39.7033535Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:04:40.1460484Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:04:40 (UTC), DetailsLevel: ERR
+2026-04-20T16:04:40.1865167Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:04:40 (UTC), DetailsLevel: ERR
+2026-04-20T16:12:02.2114604Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:04:40 (UTC), DetailsLevel: ERR
+2026-04-20T16:12:04.3813428Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:04:40 (UTC), DetailsLevel: ERR
+2026-04-20T16:12:04.3815521Z Container start method called.
+2026-04-20T16:12:04.3816385Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:12:04.3817556Z Establishing network.
+2026-04-20T16:12:04.3823930Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T16:12:04.7742048Z Container is starting.
+2026-04-20T16:12:04.7743268Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:12:04.7744474Z Establishing user namespace if not established already.
+2026-04-20T16:12:04.7745621Z Establishing network if not established already.
+2026-04-20T16:12:04.7746831Z Mounting volumes.
+2026-04-20T16:12:04.7762942Z Nested mountpoint 
+2026-04-20T16:12:04.8453297Z Nested mountpoint volatile/logs
+2026-04-20T16:12:04.8540902Z Nested mountpoint 
+2026-04-20T16:12:04.8546757Z Nested mountpoint 
+2026-04-20T16:12:04.8844811Z Nested mountpoint 
+2026-04-20T16:12:05.9932745Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T16:12:06.0518101Z Creating container.
+2026-04-20T16:12:06.0520828Z Creating pipes for streaming container io.
+2026-04-20T16:12:06.0525678Z Creating stdout named pipe at /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stdout_ab83667fa8ce4b0ba3618491f05a4b3a.
+2026-04-20T16:12:06.0617960Z Successfully created stdout named pipe at: /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stdout_ab83667fa8ce4b0ba3618491f05a4b3a.
+2026-04-20T16:12:06.0618968Z Opening named pipe /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stdout_ab83667fa8ce4b0ba3618491f05a4b3a for reading in non-blocking mode.
+2026-04-20T16:12:06.0620277Z Successfully opened named pipe: /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stdout_ab83667fa8ce4b0ba3618491f05a4b3a.
+2026-04-20T16:12:06.0621039Z Successfully removed non-blocking flag from /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stdout_ab83667fa8ce4b0ba3618491f05a4b3a.
+2026-04-20T16:12:06.0622305Z Creating stderr named pipe at /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stderr_d8b80fa88e3244409b1526053e23321a.
+2026-04-20T16:12:06.0631809Z Successfully created stderr named pipe at: /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stderr_d8b80fa88e3244409b1526053e23321a.
+2026-04-20T16:12:06.0633324Z Opening named pipe /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stderr_d8b80fa88e3244409b1526053e23321a for reading in non-blocking mode.
+2026-04-20T16:12:06.0634449Z Successfully opened named pipe: /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stderr_d8b80fa88e3244409b1526053e23321a.
+2026-04-20T16:12:06.0635252Z Successfully removed non-blocking flag from /podr/container/pipe/16fbb6ca5f15_invoice-forge-app/stderr_d8b80fa88e3244409b1526053e23321a.
+2026-04-20T16:12:06.0636471Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T16:12:07.3509887Z Starting container: 16fbb6ca5f15_invoice-forge-app.
+2026-04-20T16:12:07.4213646Z Starting watchers and probes.
+2026-04-20T16:12:07.4225151Z Starting metrics collection.
+2026-04-20T16:12:07.4228688Z Container is running.
+2026-04-20T16:12:07.4229743Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:12:07.6428453Z Container start method finished after 3260 ms.
+2026-04-20T16:12:07.6430423Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:12:07.6430719Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T16:12:42.9059099Z Container has finished running with exit code: 1.
+2026-04-20T16:12:42.9141236Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T16:12:42.9153099Z Stop and delete container. Retry count = 0
+2026-04-20T16:12:42.9154697Z Stopping container: 16fbb6ca5f15_invoice-forge-app.
+2026-04-20T16:12:43.0944208Z Deleting container: 16fbb6ca5f15_invoice-forge-app. Retry count = 0
+2026-04-20T16:12:43.4286941Z Container spec TerminationMessagePolicy  path 
+2026-04-20T16:12:43.4362600Z Container is terminated. Total time elapsed: 521 ms.
+2026-04-20T16:12:43.4363609Z Site container: invoice-forge-app terminated during site startup.
+2026-04-20T16:12:43.4364698Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:04:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:12:43.4590892Z Site startup probe failed after 35.7960938 seconds.
+2026-04-20T16:12:43.7190654Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:12:43.7498159Z Failed to start site. Revert by stopping site.
+2026-04-20T16:12:43.7503783Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:12:43.7589104Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:12:43.7589434Z Site: invoice-forge-app stopped.
+2026-04-20T16:12:43.7699371Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:12:44.0923438Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:12:44.3145452Z Site: invoice-forge-app will be blocked for 1 minutes till 04/20/2026 16:13:44
+2026-04-20T16:12:44.3485714Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: invoice-forge-app will be blocked for 1 minutes till 04/20/2026 16:13:44, DetailsLevel: WARN
+2026-04-20T16:12:44.4080171Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:12:44 (UTC), DetailsLevel: WARN
+2026-04-20T16:12:44.6109551Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:12:44 (UTC), DetailsLevel: WARN
+2026-04-20T16:13:44.3164262Z Site: invoice-forge-app is unblocked.
+2026-04-20T16:14:46.4646984Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:12:44 (UTC), DetailsLevel: WARN
+2026-04-20T16:14:47.8619546Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:12:44 (UTC), DetailsLevel: WARN
+2026-04-20T16:14:47.8621066Z Container start method called.
+2026-04-20T16:14:47.8621881Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:14:47.8623039Z Establishing network.
+2026-04-20T16:14:47.8624220Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T16:14:48.0857515Z Container is starting.
+2026-04-20T16:14:48.0929532Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:14:48.0934284Z Establishing user namespace if not established already.
+2026-04-20T16:14:48.0938895Z Establishing network if not established already.
+2026-04-20T16:14:48.0943768Z Mounting volumes.
+2026-04-20T16:14:48.0951553Z Nested mountpoint 
+2026-04-20T16:14:48.1543840Z Nested mountpoint volatile/logs
+2026-04-20T16:14:48.1747213Z Nested mountpoint 
+2026-04-20T16:14:48.1836912Z Nested mountpoint 
+2026-04-20T16:14:48.1934780Z Nested mountpoint 
+2026-04-20T16:14:48.4873662Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T16:14:48.4879321Z Creating container.
+2026-04-20T16:14:48.4952019Z Creating pipes for streaming container io.
+2026-04-20T16:14:48.4953261Z Creating stdout named pipe at /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stdout_c11ee496efad4ce59b50c165f7acdc1a.
+2026-04-20T16:14:48.4955102Z Successfully created stdout named pipe at: /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stdout_c11ee496efad4ce59b50c165f7acdc1a.
+2026-04-20T16:14:48.4955897Z Opening named pipe /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stdout_c11ee496efad4ce59b50c165f7acdc1a for reading in non-blocking mode.
+2026-04-20T16:14:48.4956783Z Successfully opened named pipe: /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stdout_c11ee496efad4ce59b50c165f7acdc1a.
+2026-04-20T16:14:48.4957584Z Successfully removed non-blocking flag from /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stdout_c11ee496efad4ce59b50c165f7acdc1a.
+2026-04-20T16:14:48.4976524Z Creating stderr named pipe at /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stderr_83b9de10f0584a1b88ac1c8818fede13.
+2026-04-20T16:14:48.4977927Z Successfully created stderr named pipe at: /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stderr_83b9de10f0584a1b88ac1c8818fede13.
+2026-04-20T16:14:48.5062787Z Opening named pipe /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stderr_83b9de10f0584a1b88ac1c8818fede13 for reading in non-blocking mode.
+2026-04-20T16:14:48.5064933Z Successfully opened named pipe: /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stderr_83b9de10f0584a1b88ac1c8818fede13.
+2026-04-20T16:14:48.5070880Z Successfully removed non-blocking flag from /podr/container/pipe/d5d8d8fa4fd5_invoice-forge-app/stderr_83b9de10f0584a1b88ac1c8818fede13.
+2026-04-20T16:14:48.5078508Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T16:14:49.0310830Z Starting container: d5d8d8fa4fd5_invoice-forge-app.
+2026-04-20T16:14:49.1083494Z Starting watchers and probes.
+2026-04-20T16:14:49.1089336Z Starting metrics collection.
+2026-04-20T16:14:49.1112230Z Container is running.
+2026-04-20T16:14:49.1115206Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:14:49.4426685Z Container start method finished after 1580 ms.
+2026-04-20T16:14:49.4430417Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:14:49.4501645Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T16:15:11.1474703Z Container has finished running with exit code: 1.
+2026-04-20T16:15:11.1550610Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T16:15:11.1565254Z Stop and delete container. Retry count = 0
+2026-04-20T16:15:11.1575746Z Stopping container: d5d8d8fa4fd5_invoice-forge-app.
+2026-04-20T16:15:11.2680263Z Deleting container: d5d8d8fa4fd5_invoice-forge-app. Retry count = 0
+2026-04-20T16:15:11.5292941Z Container spec TerminationMessagePolicy  path 
+2026-04-20T16:15:11.5294402Z Container is terminated. Total time elapsed: 374 ms.
+2026-04-20T16:15:11.5295246Z Site container: invoice-forge-app terminated during site startup.
+2026-04-20T16:15:11.5296267Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:12:43, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:15:11.5599761Z Site startup probe failed after 22.1076178 seconds.
+2026-04-20T16:15:11.7604602Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:15:11.7793179Z Failed to start site. Revert by stopping site.
+2026-04-20T16:15:11.7796154Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:15:11.7801870Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: invoice-forge-app terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-04-20T16:15:11.7802070Z Site: invoice-forge-app stopped.
+2026-04-20T16:19:07.3479579Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:15:12 (UTC), DetailsLevel: WARN
+2026-04-20T16:19:08.7250130Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 04/20/2026 16:15:12 (UTC), DetailsLevel: WARN
+2026-04-20T16:19:08.7264918Z Container start method called.
+2026-04-20T16:19:08.7270806Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:19:08.7273990Z Establishing network.
+2026-04-20T16:19:08.7348938Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T16:19:09.0511576Z Container is starting.
+2026-04-20T16:19:09.0517577Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:19:09.0520401Z Establishing user namespace if not established already.
+2026-04-20T16:19:09.0594640Z Establishing network if not established already.
+2026-04-20T16:19:09.0599147Z Mounting volumes.
+2026-04-20T16:19:09.0605353Z Nested mountpoint 
+2026-04-20T16:19:09.0803161Z Nested mountpoint volatile/logs
+2026-04-20T16:19:09.2209912Z Nested mountpoint 
+2026-04-20T16:19:09.2224603Z Nested mountpoint 
+2026-04-20T16:19:09.3220194Z Nested mountpoint 
+2026-04-20T16:19:10.0371479Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T16:19:10.0374061Z Creating container.
+2026-04-20T16:19:10.0375300Z Creating pipes for streaming container io.
+2026-04-20T16:19:10.0452716Z Creating stdout named pipe at /podr/container/pipe/a51f5311675c_invoice-forge-app/stdout_94e584533bd045afbe8347aeaeceb67f.
+2026-04-20T16:19:10.0455568Z Successfully created stdout named pipe at: /podr/container/pipe/a51f5311675c_invoice-forge-app/stdout_94e584533bd045afbe8347aeaeceb67f.
+2026-04-20T16:19:10.0456705Z Opening named pipe /podr/container/pipe/a51f5311675c_invoice-forge-app/stdout_94e584533bd045afbe8347aeaeceb67f for reading in non-blocking mode.
+2026-04-20T16:19:10.0457992Z Successfully opened named pipe: /podr/container/pipe/a51f5311675c_invoice-forge-app/stdout_94e584533bd045afbe8347aeaeceb67f.
+2026-04-20T16:19:10.0459202Z Successfully removed non-blocking flag from /podr/container/pipe/a51f5311675c_invoice-forge-app/stdout_94e584533bd045afbe8347aeaeceb67f.
+2026-04-20T16:19:10.0552290Z Creating stderr named pipe at /podr/container/pipe/a51f5311675c_invoice-forge-app/stderr_26a31ded26f847da81a88ee1147391c0.
+2026-04-20T16:19:10.0554264Z Successfully created stderr named pipe at: /podr/container/pipe/a51f5311675c_invoice-forge-app/stderr_26a31ded26f847da81a88ee1147391c0.
+2026-04-20T16:19:10.0555390Z Opening named pipe /podr/container/pipe/a51f5311675c_invoice-forge-app/stderr_26a31ded26f847da81a88ee1147391c0 for reading in non-blocking mode.
+2026-04-20T16:19:10.0556639Z Successfully opened named pipe: /podr/container/pipe/a51f5311675c_invoice-forge-app/stderr_26a31ded26f847da81a88ee1147391c0.
+2026-04-20T16:19:10.0577065Z Successfully removed non-blocking flag from /podr/container/pipe/a51f5311675c_invoice-forge-app/stderr_26a31ded26f847da81a88ee1147391c0.
+2026-04-20T16:19:10.0961119Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T16:19:11.0426235Z Starting container: a51f5311675c_invoice-forge-app.
+2026-04-20T16:19:11.1524423Z Starting watchers and probes.
+2026-04-20T16:19:11.1529739Z Starting metrics collection.
+2026-04-20T16:19:11.1532857Z Container is running.
+2026-04-20T16:19:11.1614216Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:19:11.4724086Z Container start method finished after 2745 ms.
+2026-04-20T16:19:11.4725893Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:19:11.4726114Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T16:19:46.0356680Z Site startup probe succeeded after 34.5621928 seconds.
+2026-04-20T16:19:46.3792479Z State: Starting, Action: WarmUpProbeSucceeded, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site startup probe succeeded after 34.5621928 seconds., DetailsLevel: INFO
+2026-04-20T16:19:47.0045436Z Site is running with deployment version: 68bcee9d-9146-4c54-b52d-5c8e9634ccdb
+2026-04-20T16:19:47.0053319Z Site started.
+2026-04-20T16:19:47.0092010Z State: Started, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:19:47 (UTC), DetailsLevel: INFO
+2026-04-20T16:19:47.0195078Z Site is running with patch version NODE 20.20.0
+2026-04-20T16:22:09.6885034Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T16:22:15.5380168Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T16:22:15.5381401Z Container start method called.
+2026-04-20T16:22:15.5381798Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:22:15.5382647Z Establishing network.
+2026-04-20T16:22:15.5383543Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T16:22:17.5480708Z Container is starting.
+2026-04-20T16:22:17.5481866Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:22:17.5482752Z Establishing user namespace if not established already.
+2026-04-20T16:22:17.5483524Z Establishing network if not established already.
+2026-04-20T16:22:17.5484559Z Mounting volumes.
+2026-04-20T16:22:17.5486024Z Nested mountpoint 
+2026-04-20T16:22:18.0024505Z Nested mountpoint volatile/logs
+2026-04-20T16:22:18.1315578Z Nested mountpoint 
+2026-04-20T16:22:18.1335543Z Nested mountpoint 
+2026-04-20T16:22:18.3420855Z Nested mountpoint 
+2026-04-20T16:22:22.1946223Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T16:22:22.2048580Z Creating container.
+2026-04-20T16:22:22.2053119Z Creating pipes for streaming container io.
+2026-04-20T16:22:22.2236893Z Creating stdout named pipe at /podr/container/pipe/a65167459781_invoice-forge-app/stdout_4c51385aa528478e84170faffd8868a1.
+2026-04-20T16:22:22.2241318Z Successfully created stdout named pipe at: /podr/container/pipe/a65167459781_invoice-forge-app/stdout_4c51385aa528478e84170faffd8868a1.
+2026-04-20T16:22:22.2242215Z Opening named pipe /podr/container/pipe/a65167459781_invoice-forge-app/stdout_4c51385aa528478e84170faffd8868a1 for reading in non-blocking mode.
+2026-04-20T16:22:22.2243281Z Successfully opened named pipe: /podr/container/pipe/a65167459781_invoice-forge-app/stdout_4c51385aa528478e84170faffd8868a1.
+2026-04-20T16:22:22.2244032Z Successfully removed non-blocking flag from /podr/container/pipe/a65167459781_invoice-forge-app/stdout_4c51385aa528478e84170faffd8868a1.
+2026-04-20T16:22:22.2248186Z Creating stderr named pipe at /podr/container/pipe/a65167459781_invoice-forge-app/stderr_9d7fef9f200a4861b13e0d9fe0a2ba59.
+2026-04-20T16:22:22.2250180Z Successfully created stderr named pipe at: /podr/container/pipe/a65167459781_invoice-forge-app/stderr_9d7fef9f200a4861b13e0d9fe0a2ba59.
+2026-04-20T16:22:22.2250909Z Opening named pipe /podr/container/pipe/a65167459781_invoice-forge-app/stderr_9d7fef9f200a4861b13e0d9fe0a2ba59 for reading in non-blocking mode.
+2026-04-20T16:22:22.2251864Z Successfully opened named pipe: /podr/container/pipe/a65167459781_invoice-forge-app/stderr_9d7fef9f200a4861b13e0d9fe0a2ba59.
+2026-04-20T16:22:22.2252621Z Successfully removed non-blocking flag from /podr/container/pipe/a65167459781_invoice-forge-app/stderr_9d7fef9f200a4861b13e0d9fe0a2ba59.
+2026-04-20T16:22:22.2253810Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T16:22:26.1579455Z Starting container: a65167459781_invoice-forge-app.
+2026-04-20T16:22:26.4984456Z Starting watchers and probes.
+2026-04-20T16:22:26.4989218Z Starting metrics collection.
+2026-04-20T16:22:26.5077383Z Container is running.
+2026-04-20T16:22:26.5195394Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:22:26.6896869Z Container start method finished after 11151 ms.
+2026-04-20T16:22:26.8197535Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:22:26.8198214Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T16:23:38.8994862Z Site startup probe succeeded after 72.0785402 seconds.
+2026-04-20T16:23:39.1623515Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 72.0785402 seconds., DetailsLevel: INFO
+2026-04-20T16:23:40.1954232Z Site is running with deployment version: 68bcee9d-9146-4c54-b52d-5c8e9634ccdb
+2026-04-20T16:23:40.1971031Z Site started.
+2026-04-20T16:23:40.1971923Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/20/2026 16:23:40 (UTC), DetailsLevel: INFO
+2026-04-20T16:23:40.1973979Z Site is running with patch version NODE 20.20.0
+2026-04-20T16:24:00.3330061Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:19:47 (UTC), DetailsLevel: INFO
+2026-04-20T16:24:00.3421626Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:19:47 (UTC), DetailsLevel: INFO
+2026-04-20T16:24:00.3427202Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T16:24:00.4230198Z Stop and delete container. Retry count = 0
+2026-04-20T16:24:00.4231769Z Stopping container: a51f5311675c_invoice-forge-app.
+2026-04-20T16:24:06.0626845Z Deleting container: a51f5311675c_invoice-forge-app. Retry count = 0
+2026-04-20T16:24:08.0342468Z Container spec TerminationMessagePolicy  path 
+2026-04-20T16:24:08.0417847Z Container is terminated. Total time elapsed: 7691 ms.
+2026-04-20T16:24:08.0729541Z Site: invoice-forge-app stopped.
+2026-04-20T16:24:09.4501450Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T16:24:11.4742561Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T16:24:11.4744235Z Container start method called.
+2026-04-20T16:24:11.4744939Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:24:11.4745805Z Establishing network.
+2026-04-20T16:24:11.4746748Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T16:24:11.9299761Z Container is starting.
+2026-04-20T16:24:11.9300613Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T16:24:11.9301473Z Establishing user namespace if not established already.
+2026-04-20T16:24:11.9302314Z Establishing network if not established already.
+2026-04-20T16:24:11.9303285Z Mounting volumes.
+2026-04-20T16:24:11.9408175Z Nested mountpoint 
+2026-04-20T16:24:12.0106266Z Nested mountpoint volatile/logs
+2026-04-20T16:24:12.0295156Z Nested mountpoint 
+2026-04-20T16:24:12.2094330Z Nested mountpoint 
+2026-04-20T16:24:12.2403104Z Nested mountpoint 
+2026-04-20T16:24:14.0005856Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T16:24:14.0095423Z Creating container.
+2026-04-20T16:24:14.0100457Z Creating pipes for streaming container io.
+2026-04-20T16:24:14.0102556Z Creating stdout named pipe at /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stdout_7346cc910bcf402a923298543dd018e4.
+2026-04-20T16:24:14.0196783Z Successfully created stdout named pipe at: /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stdout_7346cc910bcf402a923298543dd018e4.
+2026-04-20T16:24:14.0712658Z Opening named pipe /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stdout_7346cc910bcf402a923298543dd018e4 for reading in non-blocking mode.
+2026-04-20T16:24:14.0716395Z Successfully opened named pipe: /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stdout_7346cc910bcf402a923298543dd018e4.
+2026-04-20T16:24:14.1099156Z Successfully removed non-blocking flag from /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stdout_7346cc910bcf402a923298543dd018e4.
+2026-04-20T16:24:14.1305255Z Creating stderr named pipe at /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stderr_1784697bc39b4980894173cbe5653f90.
+2026-04-20T16:24:14.1308464Z Successfully created stderr named pipe at: /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stderr_1784697bc39b4980894173cbe5653f90.
+2026-04-20T16:24:14.1309369Z Opening named pipe /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stderr_1784697bc39b4980894173cbe5653f90 for reading in non-blocking mode.
+2026-04-20T16:24:14.1310347Z Successfully opened named pipe: /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stderr_1784697bc39b4980894173cbe5653f90.
+2026-04-20T16:24:14.1311123Z Successfully removed non-blocking flag from /podr/container/pipe/435ebc0bb08d_invoice-forge-app/stderr_1784697bc39b4980894173cbe5653f90.
+2026-04-20T16:24:14.1312497Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T16:24:15.2292439Z Starting container: 435ebc0bb08d_invoice-forge-app.
+2026-04-20T16:24:15.3608826Z Starting watchers and probes.
+2026-04-20T16:24:15.3615614Z Starting metrics collection.
+2026-04-20T16:24:15.3618076Z Container is running.
+2026-04-20T16:24:15.3619259Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:24:15.7844865Z Container start method finished after 4309 ms.
+2026-04-20T16:24:15.7846837Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T16:24:15.7847061Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T16:24:55.3467519Z Site startup probe succeeded after 39.5515716 seconds.
+2026-04-20T16:24:55.7276230Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 39.5515716 seconds., DetailsLevel: INFO
+2026-04-20T16:24:56.2096227Z Site is running with deployment version: 3e1b9bf0-351d-4046-ab9a-a092eb11cbf6
+2026-04-20T16:24:56.2099850Z Site started.
+2026-04-20T16:24:56.2102350Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/20/2026 16:24:56 (UTC), DetailsLevel: INFO
+2026-04-20T16:24:56.2105696Z Site is running with patch version NODE 20.20.0
+2026-04-20T16:25:16.2752285Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:23:40 (UTC), DetailsLevel: INFO
+2026-04-20T16:25:16.2766116Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:23:40 (UTC), DetailsLevel: INFO
+2026-04-20T16:25:16.2846078Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T16:25:16.3268337Z Stop and delete container. Retry count = 0
+2026-04-20T16:25:16.3269499Z Stopping container: a65167459781_invoice-forge-app.
+2026-04-20T16:25:21.4703327Z Deleting container: a65167459781_invoice-forge-app. Retry count = 0
+2026-04-20T16:25:22.0614289Z Container spec TerminationMessagePolicy  path 
+2026-04-20T16:25:22.0619697Z Container is terminated. Total time elapsed: 5776 ms.
+2026-04-20T16:25:22.0621430Z Site: invoice-forge-app stopped.
+2026-04-20T17:19:23.4786407Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T17:19:28.3769583Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T17:19:28.3775445Z Container start method called.
+2026-04-20T17:19:28.3879428Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.5:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T17:19:28.3961671Z Establishing network.
+2026-04-20T17:19:28.3966587Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T17:19:29.9374580Z Container is starting.
+2026-04-20T17:19:29.9385641Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T17:19:29.9389097Z Establishing user namespace if not established already.
+2026-04-20T17:19:29.9472330Z Establishing network if not established already.
+2026-04-20T17:19:29.9477335Z Mounting volumes.
+2026-04-20T17:19:29.9784849Z Nested mountpoint 
+2026-04-20T17:19:30.0472441Z Nested mountpoint volatile/logs
+2026-04-20T17:19:30.0782873Z Nested mountpoint 
+2026-04-20T17:19:30.2706499Z Nested mountpoint 
+2026-04-20T17:19:30.4007146Z Nested mountpoint 
+2026-04-20T17:19:32.3217239Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T17:19:32.3399049Z Creating container.
+2026-04-20T17:19:32.3505433Z Creating pipes for streaming container io.
+2026-04-20T17:19:32.3906862Z Creating stdout named pipe at /podr/container/pipe/a79242e31f1e_invoice-forge-app/stdout_bc0857b99adc4303911a053bd61e0044.
+2026-04-20T17:19:32.4398051Z Successfully created stdout named pipe at: /podr/container/pipe/a79242e31f1e_invoice-forge-app/stdout_bc0857b99adc4303911a053bd61e0044.
+2026-04-20T17:19:32.4402523Z Opening named pipe /podr/container/pipe/a79242e31f1e_invoice-forge-app/stdout_bc0857b99adc4303911a053bd61e0044 for reading in non-blocking mode.
+2026-04-20T17:19:32.4404412Z Successfully opened named pipe: /podr/container/pipe/a79242e31f1e_invoice-forge-app/stdout_bc0857b99adc4303911a053bd61e0044.
+2026-04-20T17:19:32.4405460Z Successfully removed non-blocking flag from /podr/container/pipe/a79242e31f1e_invoice-forge-app/stdout_bc0857b99adc4303911a053bd61e0044.
+2026-04-20T17:19:32.4727269Z Creating stderr named pipe at /podr/container/pipe/a79242e31f1e_invoice-forge-app/stderr_93842f2d02904bd3ab1db9e39c6ddc98.
+2026-04-20T17:19:32.4904910Z Successfully created stderr named pipe at: /podr/container/pipe/a79242e31f1e_invoice-forge-app/stderr_93842f2d02904bd3ab1db9e39c6ddc98.
+2026-04-20T17:19:32.4914741Z Opening named pipe /podr/container/pipe/a79242e31f1e_invoice-forge-app/stderr_93842f2d02904bd3ab1db9e39c6ddc98 for reading in non-blocking mode.
+2026-04-20T17:19:32.4923191Z Successfully opened named pipe: /podr/container/pipe/a79242e31f1e_invoice-forge-app/stderr_93842f2d02904bd3ab1db9e39c6ddc98.
+2026-04-20T17:19:32.4925179Z Successfully removed non-blocking flag from /podr/container/pipe/a79242e31f1e_invoice-forge-app/stderr_93842f2d02904bd3ab1db9e39c6ddc98.
+2026-04-20T17:19:32.4931427Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.5:13209 and fully qualified image name: 10.1.0.5:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T17:19:34.9891784Z Starting container: a79242e31f1e_invoice-forge-app.
+2026-04-20T17:19:35.1587736Z Starting watchers and probes.
+2026-04-20T17:19:35.1686294Z Starting metrics collection.
+2026-04-20T17:19:35.1689001Z Container is running.
+2026-04-20T17:19:35.1689820Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T17:19:35.7603145Z Container start method finished after 7382 ms.
+2026-04-20T17:19:35.7804548Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T17:19:35.7805334Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T17:21:32.5223357Z Site startup probe succeeded after 116.6016239 seconds.
+2026-04-20T17:21:33.6497352Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 116.6016239 seconds., DetailsLevel: INFO
+2026-04-20T17:21:37.1111163Z Site is running with deployment version: 3e1b9bf0-351d-4046-ab9a-a092eb11cbf6
+2026-04-20T17:21:37.1305752Z Site started.
+2026-04-20T17:21:37.1321838Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/20/2026 17:21:37 (UTC), DetailsLevel: INFO
+2026-04-20T17:21:37.1422980Z Site is running with patch version NODE 20.20.0
+2026-04-20T17:21:57.5292941Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:24:56 (UTC), DetailsLevel: INFO
+2026-04-20T17:21:57.5697865Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 16:24:56 (UTC), DetailsLevel: INFO
+2026-04-20T17:21:57.5790614Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T17:21:57.8299833Z Stop and delete container. Retry count = 0
+2026-04-20T17:21:57.8303386Z Stopping container: 435ebc0bb08d_invoice-forge-app.
+2026-04-20T17:22:04.1041119Z Deleting container: 435ebc0bb08d_invoice-forge-app. Retry count = 0
+2026-04-20T17:22:06.6176217Z Container spec TerminationMessagePolicy  path 
+2026-04-20T17:22:06.6183264Z Container is terminated. Total time elapsed: 9038 ms.
+2026-04-20T17:22:06.6780566Z Site: invoice-forge-app stopped.
+2026-04-20T17:32:38.8197231Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T17:32:41.4748679Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T17:32:41.4862788Z Container start method called.
+2026-04-20T17:32:41.4940962Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.5:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T17:32:41.4949780Z Establishing network.
+2026-04-20T17:32:41.5038806Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T17:32:41.9455288Z Container is starting.
+2026-04-20T17:32:41.9463422Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T17:32:41.9538099Z Establishing user namespace if not established already.
+2026-04-20T17:32:41.9547891Z Establishing network if not established already.
+2026-04-20T17:32:41.9553746Z Mounting volumes.
+2026-04-20T17:32:41.9669763Z Nested mountpoint 
+2026-04-20T17:32:42.0361788Z Nested mountpoint volatile/logs
+2026-04-20T17:32:42.1056904Z Nested mountpoint 
+2026-04-20T17:32:42.2164874Z Nested mountpoint 
+2026-04-20T17:32:42.2477289Z Nested mountpoint 
+2026-04-20T17:32:43.3335678Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T17:32:43.3337434Z Creating container.
+2026-04-20T17:32:43.3338545Z Creating pipes for streaming container io.
+2026-04-20T17:32:43.3340675Z Creating stdout named pipe at /podr/container/pipe/40000c8dc811_invoice-forge-app/stdout_fb6aab6de1f74f748410121ed80d022e.
+2026-04-20T17:32:43.3846204Z Successfully created stdout named pipe at: /podr/container/pipe/40000c8dc811_invoice-forge-app/stdout_fb6aab6de1f74f748410121ed80d022e.
+2026-04-20T17:32:43.3850855Z Opening named pipe /podr/container/pipe/40000c8dc811_invoice-forge-app/stdout_fb6aab6de1f74f748410121ed80d022e for reading in non-blocking mode.
+2026-04-20T17:32:43.3852617Z Successfully opened named pipe: /podr/container/pipe/40000c8dc811_invoice-forge-app/stdout_fb6aab6de1f74f748410121ed80d022e.
+2026-04-20T17:32:43.3853455Z Successfully removed non-blocking flag from /podr/container/pipe/40000c8dc811_invoice-forge-app/stdout_fb6aab6de1f74f748410121ed80d022e.
+2026-04-20T17:32:43.3854850Z Creating stderr named pipe at /podr/container/pipe/40000c8dc811_invoice-forge-app/stderr_bf4479202f0f488f8e5160ceaa064ea4.
+2026-04-20T17:32:43.4449765Z Successfully created stderr named pipe at: /podr/container/pipe/40000c8dc811_invoice-forge-app/stderr_bf4479202f0f488f8e5160ceaa064ea4.
+2026-04-20T17:32:43.4455097Z Opening named pipe /podr/container/pipe/40000c8dc811_invoice-forge-app/stderr_bf4479202f0f488f8e5160ceaa064ea4 for reading in non-blocking mode.
+2026-04-20T17:32:43.4456962Z Successfully opened named pipe: /podr/container/pipe/40000c8dc811_invoice-forge-app/stderr_bf4479202f0f488f8e5160ceaa064ea4.
+2026-04-20T17:32:43.4540355Z Successfully removed non-blocking flag from /podr/container/pipe/40000c8dc811_invoice-forge-app/stderr_bf4479202f0f488f8e5160ceaa064ea4.
+2026-04-20T17:32:43.4556471Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.5:13209 and fully qualified image name: 10.1.0.5:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T17:32:44.6608984Z Starting container: 40000c8dc811_invoice-forge-app.
+2026-04-20T17:32:44.8406655Z Starting watchers and probes.
+2026-04-20T17:32:44.8689782Z Starting metrics collection.
+2026-04-20T17:32:44.8721760Z Container is running.
+2026-04-20T17:32:44.9022347Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T17:32:45.4141966Z Container start method finished after 3846 ms.
+2026-04-20T17:32:45.4347420Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T17:32:45.4537314Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T17:33:31.7536405Z Site startup probe succeeded after 46.25039 seconds.
+2026-04-20T17:33:32.1851873Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 46.25039 seconds., DetailsLevel: INFO
+2026-04-20T17:33:33.5590919Z Site is running with deployment version: 10b94c36-7d66-4070-a0d6-8030a3dc22c1
+2026-04-20T17:33:33.5678905Z Site started.
+2026-04-20T17:33:33.5780205Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/20/2026 17:33:33 (UTC), DetailsLevel: INFO
+2026-04-20T17:33:33.5865691Z Site is running with patch version NODE 20.20.0
+2026-04-20T17:33:53.6849911Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 17:21:37 (UTC), DetailsLevel: INFO
+2026-04-20T17:33:53.6874167Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 17:21:37 (UTC), DetailsLevel: INFO
+2026-04-20T17:33:53.6930348Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T17:33:53.7258151Z Stop and delete container. Retry count = 0
+2026-04-20T17:33:53.7333080Z Stopping container: a79242e31f1e_invoice-forge-app.
+2026-04-20T17:33:58.9371332Z Deleting container: a79242e31f1e_invoice-forge-app. Retry count = 0
+2026-04-20T17:33:59.3748342Z Container spec TerminationMessagePolicy  path 
+2026-04-20T17:33:59.3834364Z Container is terminated. Total time elapsed: 5689 ms.
+2026-04-20T17:33:59.3919732Z Site: invoice-forge-app stopped.
+2026-04-20T17:51:01.9074077Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T17:51:04.7399906Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-20T17:51:04.7414027Z Container start method called.
+2026-04-20T17:51:04.7419430Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.5:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T17:51:04.7422537Z Establishing network.
+2026-04-20T17:51:04.7504544Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-20T17:51:05.4447873Z Container is starting.
+2026-04-20T17:51:05.4449969Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-20T17:51:05.4451706Z Establishing user namespace if not established already.
+2026-04-20T17:51:05.4452983Z Establishing network if not established already.
+2026-04-20T17:51:05.4621175Z Mounting volumes.
+2026-04-20T17:51:05.4655261Z Nested mountpoint 
+2026-04-20T17:51:05.5438596Z Nested mountpoint volatile/logs
+2026-04-20T17:51:05.5854074Z Nested mountpoint 
+2026-04-20T17:51:05.6841685Z Nested mountpoint 
+2026-04-20T17:51:05.7155441Z Nested mountpoint 
+2026-04-20T17:51:07.0019229Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-20T17:51:07.0029407Z Creating container.
+2026-04-20T17:51:07.0106475Z Creating pipes for streaming container io.
+2026-04-20T17:51:07.0107893Z Creating stdout named pipe at /podr/container/pipe/9bffd01b2750_invoice-forge-app/stdout_cd8a3f2f71574ffbbc2ccd6ddce3c794.
+2026-04-20T17:51:07.0118738Z Successfully created stdout named pipe at: /podr/container/pipe/9bffd01b2750_invoice-forge-app/stdout_cd8a3f2f71574ffbbc2ccd6ddce3c794.
+2026-04-20T17:51:07.0119661Z Opening named pipe /podr/container/pipe/9bffd01b2750_invoice-forge-app/stdout_cd8a3f2f71574ffbbc2ccd6ddce3c794 for reading in non-blocking mode.
+2026-04-20T17:51:07.0120600Z Successfully opened named pipe: /podr/container/pipe/9bffd01b2750_invoice-forge-app/stdout_cd8a3f2f71574ffbbc2ccd6ddce3c794.
+2026-04-20T17:51:07.0121401Z Successfully removed non-blocking flag from /podr/container/pipe/9bffd01b2750_invoice-forge-app/stdout_cd8a3f2f71574ffbbc2ccd6ddce3c794.
+2026-04-20T17:51:07.0195815Z Creating stderr named pipe at /podr/container/pipe/9bffd01b2750_invoice-forge-app/stderr_f130be8add5e461784a6281da570022e.
+2026-04-20T17:51:07.0197761Z Successfully created stderr named pipe at: /podr/container/pipe/9bffd01b2750_invoice-forge-app/stderr_f130be8add5e461784a6281da570022e.
+2026-04-20T17:51:07.0216770Z Opening named pipe /podr/container/pipe/9bffd01b2750_invoice-forge-app/stderr_f130be8add5e461784a6281da570022e for reading in non-blocking mode.
+2026-04-20T17:51:07.0217956Z Successfully opened named pipe: /podr/container/pipe/9bffd01b2750_invoice-forge-app/stderr_f130be8add5e461784a6281da570022e.
+2026-04-20T17:51:07.0218820Z Successfully removed non-blocking flag from /podr/container/pipe/9bffd01b2750_invoice-forge-app/stderr_f130be8add5e461784a6281da570022e.
+2026-04-20T17:51:07.0220065Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.5:13209 and fully qualified image name: 10.1.0.5:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-20T17:51:08.3820143Z Starting container: 9bffd01b2750_invoice-forge-app.
+2026-04-20T17:51:08.5960393Z Starting watchers and probes.
+2026-04-20T17:51:08.6140781Z Starting metrics collection.
+2026-04-20T17:51:08.6147948Z Container is running.
+2026-04-20T17:51:08.6148787Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T17:51:08.9763210Z Container start method finished after 4195 ms.
+2026-04-20T17:51:08.9775662Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-20T17:51:08.9776326Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-20T17:51:51.4633815Z Site startup probe succeeded after 42.3175679 seconds.
+2026-04-20T17:51:51.8441102Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 42.3175679 seconds., DetailsLevel: INFO
+2026-04-20T17:51:52.5789932Z Site is running with deployment version: 2b41514c-83ad-4c00-b97b-4a86a5d9fbef
+2026-04-20T17:51:52.5794280Z Site started.
+2026-04-20T17:51:52.5800446Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/20/2026 17:51:52 (UTC), DetailsLevel: INFO
+2026-04-20T17:51:52.5804246Z Site is running with patch version NODE 20.20.0
+2026-04-20T17:52:12.7417575Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 17:33:33 (UTC), DetailsLevel: INFO
+2026-04-20T17:52:12.7513305Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 04/20/2026 16:15:11, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 04/20/2026 17:33:33 (UTC), DetailsLevel: INFO
+2026-04-20T17:52:12.8202577Z Container is terminating. Grace period: 5 seconds.
+2026-04-20T17:52:12.9223605Z Stop and delete container. Retry count = 0
+2026-04-20T17:52:12.9224732Z Stopping container: 40000c8dc811_invoice-forge-app.
+2026-04-20T17:52:18.3422747Z Deleting container: 40000c8dc811_invoice-forge-app. Retry count = 0
+2026-04-20T17:52:20.0101155Z Container spec TerminationMessagePolicy  path 
+2026-04-20T17:52:20.0113432Z Container is terminated. Total time elapsed: 7190 ms.
+2026-04-20T17:52:20.0300940Z Site: invoice-forge-app stopped.

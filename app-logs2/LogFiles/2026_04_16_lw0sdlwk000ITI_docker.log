@@ -1,0 +1,45 @@
+2026-04-16T16:35:40.4425831Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-16T16:35:43.5516188Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-04-16T16:35:43.6110753Z Container start method called.
+2026-04-16T16:35:43.6430554Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod for invoice-forge-app., DetailsLevel: INFO
+2026-04-16T16:35:43.6437650Z Establishing network.
+2026-04-16T16:35:43.6515912Z Pulling image: appsvc/node:20-lts_20260115.4.tuxprod.
+2026-04-16T16:35:44.8299524Z Image appsvc/node:20-lts_20260115.4.tuxprod is pulled from registry 10.1.0.6:13209
+2026-04-16T16:35:44.8997170Z Container is starting.
+2026-04-16T16:35:44.8998962Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for invoice-forge-app., DetailsLevel: INFO
+2026-04-16T16:35:44.9000855Z Establishing user namespace if not established already.
+2026-04-16T16:35:44.9174507Z Establishing network if not established already.
+2026-04-16T16:35:44.9177257Z Mounting volumes.
+2026-04-16T16:35:44.9284339Z Nested mountpoint 
+2026-04-16T16:35:45.0196691Z Nested mountpoint volatile/logs
+2026-04-16T16:35:45.0403086Z Nested mountpoint 
+2026-04-16T16:35:45.1602129Z Nested mountpoint 
+2026-04-16T16:35:45.1801811Z Nested mountpoint 
+2026-04-16T16:35:45.8043095Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for invoice-forge-app. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-04-16T16:35:45.8045226Z Creating container.
+2026-04-16T16:35:45.8122900Z Creating pipes for streaming container io.
+2026-04-16T16:35:45.8131489Z Creating stdout named pipe at /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stdout_c3a8a5454a7944f695c0abbd6b350e8e.
+2026-04-16T16:35:45.8237083Z Successfully created stdout named pipe at: /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stdout_c3a8a5454a7944f695c0abbd6b350e8e.
+2026-04-16T16:35:45.8239575Z Opening named pipe /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stdout_c3a8a5454a7944f695c0abbd6b350e8e for reading in non-blocking mode.
+2026-04-16T16:35:45.8251239Z Successfully opened named pipe: /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stdout_c3a8a5454a7944f695c0abbd6b350e8e.
+2026-04-16T16:35:45.8431655Z Successfully removed non-blocking flag from /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stdout_c3a8a5454a7944f695c0abbd6b350e8e.
+2026-04-16T16:35:45.8450545Z Creating stderr named pipe at /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stderr_fd4e1f7f863146eeb7a3d57ae2d0a148.
+2026-04-16T16:35:45.8625453Z Successfully created stderr named pipe at: /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stderr_fd4e1f7f863146eeb7a3d57ae2d0a148.
+2026-04-16T16:35:45.8637708Z Opening named pipe /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stderr_fd4e1f7f863146eeb7a3d57ae2d0a148 for reading in non-blocking mode.
+2026-04-16T16:35:45.8641526Z Successfully opened named pipe: /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stderr_fd4e1f7f863146eeb7a3d57ae2d0a148.
+2026-04-16T16:35:45.8649481Z Successfully removed non-blocking flag from /podr/container/pipe/0cf683caf8c4_invoice-forge-app/stderr_fd4e1f7f863146eeb7a3d57ae2d0a148.
+2026-04-16T16:35:45.8839054Z Creating container with image: appsvc/node:20-lts_20260115.4.tuxprod from registry: 10.1.0.6:13209 and fully qualified image name: 10.1.0.6:13209/appsvc/node:20-lts_20260115.4.tuxprod
+2026-04-16T16:35:48.8694876Z Starting container: 0cf683caf8c4_invoice-forge-app.
+2026-04-16T16:35:49.1517112Z Starting watchers and probes.
+2026-04-16T16:35:49.1619482Z Starting metrics collection.
+2026-04-16T16:35:49.1810148Z Container is running.
+2026-04-16T16:35:49.1816865Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-16T16:35:49.7217606Z Container start method finished after 6110 ms.
+2026-04-16T16:35:49.7312573Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container invoice-forge-app successfully created and is running., DetailsLevel: INFO
+2026-04-16T16:35:49.7938664Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-04-16T16:36:28.2693916Z Site startup probe succeeded after 38.4179985 seconds.
+2026-04-16T16:36:28.4297328Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 38.4179985 seconds., DetailsLevel: INFO
+2026-04-16T16:36:29.1651108Z Site is running with deployment version: 261487fe-e9ab-45aa-9748-1aad158ebd38
+2026-04-16T16:36:29.1663558Z Site started.
+2026-04-16T16:36:29.1674137Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 04/16/2026 16:36:29 (UTC), DetailsLevel: INFO
+2026-04-16T16:36:29.3159799Z Site is running with patch version NODE 20.20.0

@@ -1,0 +1,19 @@
+<step title="BackgroundTrace" date="2026-04-20T17:20:38.183" instance="b51e24" url="/api/publish" method="POST" >
+  <step title="Cleanup Xml Logs" date="2026-04-20T17:20:38.404" /><!-- duration: 241ms -->
+  <step title="Creating temporary deployment - FetchDeploymentManager" date="2026-04-20T17:20:40.668" /><!-- duration: 28ms -->
+  <step title="Creating temporary deployment" date="2026-04-20T17:20:40.808" /><!-- duration: 564ms -->
+  <step title="Performing fetch based deployment" date="2026-04-20T17:20:42.024" >
+    <step title="Cleaning up temp folders from previous zip deployments and extracting pushed zip file /tmp/zipdeploy/b60302ec-2c25-4e78-b558-dffd30fd52b4.zip (12.97 MB) to /tmp/zipdeploy/extracted" date="2026-04-20T17:20:45.306" >
+      <step title="ChmodRecursive Process exited with total time taken in ms: 234" date="2026-04-20T17:21:20.682" /><!-- duration: 70ms -->
+    </step><!-- duration: 35899ms -->
+    <step title="Deployment timer started" date="2026-04-20T17:21:23.678" >
+      <step title="DeploymentManager.Deploy(id:0b46a793-0734-43e0-b514-7ac4b2770249)" date="2026-04-20T17:21:23.767" >
+        <step title="Collecting changeset information" date="2026-04-20T17:21:23.878" /><!-- duration: 602ms -->
+        <step title="Updating submodules" date="2026-04-20T17:21:24.512" /><!-- duration: 1367ms -->
+        <step title="Determining deployment builder" date="2026-04-20T17:21:28.100" >
+          <step title="Builder is OneDeployBuilder" date="2026-04-20T17:21:28.230" /><!-- duration: 52ms -->
+        </step><!-- duration: 210ms -->
+        <step title="PreDeployment: context.CleanOutputPath False" date="2026-04-20T17:21:28.715" >
+          <step title="PreDeployment: context.OutputPath /home/site/wwwroot" date="2026-04-20T17:21:29.377" >
+            <step title="Building" date="2026-04-20T17:21:29.990" >
+              <step title="Executing external process" date="2026-04-20T17:21:32.411" type="process" path="starter.sh" arguments="/opt/Kudu/Scripts/absoluteTar.sh /tmp/zipdeploy/extracted/node_modules /tmp/zipdeploy/extracted/node_modules.tar.gz" 

@@ -1,0 +1,9 @@
+<step title="Incoming Request" date="2026-04-07T18:37:30.390" instance="42e266" url="/api/deployments?warmup=true" method="GET" type="request" pid="836,1,31" Accept="*/*" Host="invoice-forge-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (HOMEBREW)" Accept-Encoding="gzip, deflate" Authorization="Bea..." Cookie="ARRAffinity=42e266dc7a4cefbb1365a1b151402aa5440406370a5594b7a6594a67981c5937; ARRAffinitySameSite=42e266dc7a4cefbb1365a1b151402aa5440406370a5594b7a6594a67981c5937" x-ms-client-request-id="ca112326-32b0-11f1-81a5-4e4074a3995c" X-ARR-LOG-ID="ca112326-32b0-11f1-81a5-4e4074a3995c" CLIENT-IP="184.146.41.230:54257" X-SITE-DEPLOYMENT-ID="invoice-forge-app" WAS-DEFAULT-HOSTNAME="invoice-forge-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments?warmup=true" X-Client-IP="184.146.41.230" X-Client-Port="54257" >
+  <step title="DeploymentService.GetCurrentEtag" date="2026-04-07T18:37:42.063" >
+    <step title="Current Etag: &quot;f721713ba027e7e6&quot;, Cached Etag: " date="2026-04-07T18:37:42.331" /><!-- duration: 21ms -->
+  </step><!-- duration: 335ms -->
+  <step title="DeploymentService.GetDeployResults" date="2026-04-07T18:37:42.403" >
+    <step title="DeploymentManager.GetResults" date="2026-04-07T18:37:42.431" /><!-- duration: 2344ms -->
+  </step><!-- duration: 2475ms -->
+  <step title="Outgoing response" date="2026-04-07T18:37:47.408" type="response" statusCode="200" statusText="OK" /><!-- duration: 19ms -->
+</step><!-- duration: 17046ms -->

@@ -5,6 +5,7 @@ interface EntryRow {
     date: string;
     category: string;
     taskName: string;
+    taskId?: string;
     ticketKey?: string;
     ticketSummary?: string;
     timeSpent: number;
@@ -187,7 +188,7 @@ export async function POST(req: NextRequest) {
             };
 
             try {
-                const { message, entries, apiKey, model } = await req.json();
+                const { message, entries, apiKey, model, skipBatching } = await req.json();
 
                 if (!apiKey) {
                     send('error', { error: 'No Anthropic API key configured. Go to Settings to add your API key.' });
@@ -197,12 +198,13 @@ export async function POST(req: NextRequest) {
 
                 send('status', { step: 'preparing', detail: `Preparing ${entries.length} time entries for analysis...` });
 
-                // Build compact entries for the AI with explicit IDs
+                // Build compact entries for the AI with explicit IDs and full ticket context
                 const entryRows: EntryRow[] = entries.map((e: Record<string, unknown>) => ({
                     id: e.id as string,
                     date: e.date as string,
                     category: e.category as string,
                     taskName: e.taskName as string,
+                    taskId: (e.taskId as string) || undefined,
                     ticketKey: (e.ticketKey as string) || undefined,
                     ticketSummary: (e.ticketSummary as string) || undefined,
                     timeSpent: e.timeSpent as number,
@@ -213,10 +215,17 @@ export async function POST(req: NextRequest) {
 
                 const selectedModel = model || 'claude-sonnet-4-20250514';
                 
-                // Split into batches if there are too many entries
+                // Skip batching if explicitly requested (single role selected)
+                // or if entries fit in a single batch
+                const shouldBatch = !skipBatching && entryRows.length > BATCH_SIZE;
                 const batches: EntryRow[][] = [];
-                for (let i = 0; i < entryRows.length; i += BATCH_SIZE) {
-                    batches.push(entryRows.slice(i, i + BATCH_SIZE));
+                
+                if (shouldBatch) {
+                    for (let i = 0; i < entryRows.length; i += BATCH_SIZE) {
+                        batches.push(entryRows.slice(i, i + BATCH_SIZE));
+                    }
+                } else {
+                    batches.push(entryRows);
                 }
 
                 const allChanges: Change[] = [];

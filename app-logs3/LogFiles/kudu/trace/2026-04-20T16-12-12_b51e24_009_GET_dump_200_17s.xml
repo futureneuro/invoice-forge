@@ -1,0 +1,4 @@
+<step title="Incoming Request" date="2026-04-20T16:12:12.411" instance="b51e24" url="/dump" method="GET" type="request" pid="833,1,18" Host="invoice-forge-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (HOMEBREW)" Accept-Encoding="identity" Authorization="Bea..." x-ms-client-request-id="aedfcbf2-3cd3-11f1-b302-4e4074a3995c" X-ARR-LOG-ID="aedfcbf2-3cd3-11f1-b302-4e4074a3995c" CLIENT-IP="184.146.41.230:57592" X-SITE-DEPLOYMENT-ID="invoice-forge-app" WAS-DEFAULT-HOSTNAME="invoice-forge-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/dump" X-Client-IP="184.146.41.230" X-Client-Port="57592" >
+  <step title="Cleanup Xml Logs" date="2026-04-20T16:12:12.441" /><!-- duration: 51ms -->
+  <step title="Outgoing response" date="2026-04-20T16:12:29.254" type="response" statusCode="200" statusText="OK" /><!-- duration: 20ms -->
+</step><!-- duration: 16896ms -->
